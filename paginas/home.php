@@ -7,33 +7,33 @@
     <link  rel="icon" href="../imagenes/logo.png" type="/image/png" />
     <link rel="stylesheet" href="../bootstrap/css/bootstrap.min.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi UVcación</title>
+    <title>Reservaciones</title>
 </head>
 <body class="cuerpo">
-    <h1 class="croquis">Mi UVcación</h1><img src="../imagenes/logo.png" class="inl logo-home" alt="Logo"/>
+    <h1 class="croquis">Reservaciones</h1><img src="../imagenes/logo.png" class="inl logo-home" alt="Logo"/>
     <div class="separador"></div>
     <a href="../index.html"><img src="../imagenes/retroceso.png" id="retroceso" alt="Icono" /></a>
-    <h3>Materias</h3>
+    <h3>Espacios</h3>
 
-    <label class="titulos">Estructuras</label>
+    <label class="titulos">Espacio 1</label>
     <div class="containers container1">
-        <p class="enlinea aula">Aula: F402</p>
+        <p class="enlinea aula">NULL</p>
         <button class=" enlinea aula btn btn-success btn-sm" id="boton1">¿Cómo llegar?<img src="../imagenes/ubicar-rojo.png" id="icon" alt="icono" /></button>
-        <p>NRC: 83575</p>
+        <p>NULL</p>
     </div>
 
-    <label class="titulos">Sistemas Web</label>
+    <label class="titulos">Espacio 2</label>
     <div class="containers container2">
-        <p class="aula">Aula: F204</p>
+        <p class="aula">NULL</p>
         <button class=" enlinea aula btn btn-success btn-sm" id="boton2">¿Cómo llegar?<img src="../imagenes/ubicar-rojo.png" id="icon" alt="icono" /></button>
-        <p>NRC: 45536</p>
+        <p>NULL</p>
     </div>
 
-    <label class="titulos">Servidores</label>
+    <label class="titulos">Espacio 2</label>
     <div class="containers container3">
-        <p class="aula">Aula: F202</p>
+        <p class="aula">NULL</p>
         <button class=" enlinea aula btn btn-success btn-sm" id="boton3">¿Cómo llegar?<img src="../imagenes/ubicar-rojo.png" id="icon" alt="icono" /></button>
-        <p>NRC: 92847</p>
+        <p>NULL</p>
     </div>
     <div>
         <a href="paginaregion.html" class="footer btn btn-info">Buscar facultad o region</a>

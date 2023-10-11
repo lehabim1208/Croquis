@@ -18,12 +18,12 @@
       
           <!-- Icono -->
           <div class="fadeIn first">
-            <img src="imagenes/logo.jpg" id="icon" alt="User Icon" />
+            <img src="https://i.ibb.co/kHsQsMX/user-5-svgrepo-com.png" id="icon" alt="User Icon" style="width: 100px;"/>
           </div>
       
           <!-- Inicio de sesión -->
-          <form action="paginas/home.html" id="formulario">
-            <input type="text" id="login" class="fadeIn second" name="login" placeholder="Matrícula" required>
+          <form action="paginas/home.php" id="formulario">
+            <input type="text" id="login" class="fadeIn second" name="login" placeholder="Usuario" required>
             <input type="text" id="password" class="fadeIn third" name="login" placeholder="Contraseña" required>
             <input type="submit" class="fadeIn fourth" value="Entrar">
           </form>
