@@ -48,7 +48,7 @@
                 <!-- Cards de Espacios -->
                     <?php
                         // Realiza la consulta a la base de datos
-                        $sql = "SELECT idCatalogo, nombre, capacidad FROM catalogo";
+                        $sql = "SELECT idCatalogo, nombre, capacidad, numeroEdificio, zona FROM catalogo";
                         $resultado = $conn->query($sql);
 
                         if ($resultado->num_rows > 0) {
@@ -57,6 +57,8 @@
                                 $id = $fila['idCatalogo'];
                                 $nombreEspacio = $fila['nombre'];
                                 $capacidadEspacio = $fila['capacidad'];
+                                $nombreEdificio = $fila['numeroEdificio'];
+                                $zonaRegion = $fila['zona'];
                                 ?>
 
                                 <div class="col-md-4">
@@ -64,8 +66,10 @@
                                         <div class="card-body">
                                             <h5 class="card-title"><?php echo $nombreEspacio; ?></h5>
                                             <p class="card-text">Capacidad: <?php echo $capacidadEspacio; ?> personas</p>
+                                            <p class="card-text">Nombre Edifico: <?php echo $nombreEdificio; ?></p>
+                                            <p class="card-text">Zona o región: <?php echo $zonaRegion; ?></p>
                                             <button type="button" class="btn btn-primary reservar-btn" data-nombre="<?php echo $nombreEspacio; ?>" data-id="<?php echo $id; ?>">Reservar</button>
-                                            <button type="button" class="btn btn-warning editar-btn" data-nombre="<?php echo $nombreEspacio; ?>" data-capacidad="<?php echo $capacidadEspacio; ?>" data-id="<?php echo $id; ?>"><i class="fas fa-pencil-alt"></i></button>
+                                            <button type="button" class="btn btn-warning editar-btn" data-nombre="<?php echo $nombreEspacio; ?>" data-capacidad="<?php echo $capacidadEspacio; ?>" data-id="<?php echo $id; ?>" data-edificio="<?php echo $nombreEdificio; ?>" data-zona="<?php echo $zonaRegion; ?>"><i class="fas fa-pencil-alt"></i></button>
                                             <button type="button" class="btn btn-danger eliminar-btn" data-nombre="<?php echo $nombreEspacio; ?>" data-id="<?php echo $id; ?>"><i class="fas fa-trash-alt"></i></button>
                                         </div>
                                     </div>
@@ -101,16 +105,22 @@
                 <form action="../actions/crearEspacio.php" method="POST">
                     <div class="form-group">
                         <label for="nombreEspacio">Nombre del Espacio</label>
-                        <input name="nombreEspacio" type="text" class="form-control" id="nombreEspacio" placeholder="Nombre">
+                        <input name="nombreEspacio" type="text" class="form-control" id="nombreEspacio" placeholder="Nombre del Espacio">
                     </div>
                     <div class="form-group">
                         <label for="capacidadEspacio">Capacidad:</label>
-                        <select name="capacidadEspacio" class="form-control" id="capacidadEspacio">
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
+                        <input name="capacidadEspacio" type="number" class="form-control" id="capacidadEspacio" placeholder="Capacidad" min="1" max="1000">
+                    </div>
+                    <div class="form-group">
+                        <label for="nombreEdificio">Nombre del Edificio</label>
+                        <input name="nombreEdificio" type="text" class="form-control" id="nombreEdificio" placeholder="Nombre del Edificio">
+                    </div>
+                    <div class="form-group">
+                        <label for="zonaRegion">Zona o Región</label>
+                        <select name="zonaRegion" class="form-control" id="zonaRegion">
+                            <option value="Xalapa-Veracruz">Xalapa-Veracruz</option>
+                            <option value="Veracruz-Puerto">Veracruz-Puerto</option>
+                            <option value="Poza-Rica">Poza-Rica</option>
                         </select>
                     </div>
                     <div class="modal-footer">
@@ -118,6 +128,7 @@
                         <button type="submit" class="btn btn-primary">Guardar</button>
                     </div>
                 </form>
+
             </div>
         </div>
     </div>
@@ -152,31 +163,60 @@ function mostrarModalReserva(nombreEspacio, idEspacio) {
 
 
 // Función para mostrar el modal de edición
-function mostrarModalEdicion(nombreEspacio, capacidadEspacio, idEspacio) {
+function mostrarModalEdicion(nombreEspacio, capacidadEspacio, idEspacio, nombreEdificio, zona) {
     Swal.fire({
-        title: `Editar ${nombreEspacio}`,
+        title: `Editando: ${nombreEspacio}`,
         html: `
-            <input id="nombreEspacio" class="swal2-input" placeholder="Nombre del espacio" value="${nombreEspacio}">
-            <select id="capacidadEspacio" class="swal2-input">
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
-            </select>`,
+            <label class="small-label" for="nombreEspacio">Nombre:</label>
+            <input id="nombreEspacio" class="small-input swal2-input" placeholder="Nombre del espacio" value="${nombreEspacio}"><br>
+            <label class="small-label" for="capacidadEspacio">Capacidad:</label>
+            <input id="capacidadEspacio" class="small-input swal2-input" type="number" placeholder="Capacidad" min="1" max="1000" value="${capacidadEspacio}"><br>
+            <label class="small-label" for="nombreEdificio">Edificio:</label>
+            <input id="nombreEdificio" class="small-input swal2-input" placeholder="Nombre del edificio" value="${nombreEdificio}"><br>
+            <label class="small-label" for="zona">Zona:</label>
+            <input id="zona" class="small-input swal2-input" placeholder="Zona o región" value="${zona}"><br>
+        `,
         showCancelButton: true,
         confirmButtonText: 'Guardar',
         preConfirm: () => {
             const nombreEspacio = Swal.getPopup().querySelector('#nombreEspacio').value;
             const capacidadEspacio = Swal.getPopup().querySelector('#capacidadEspacio').value;
-            // Aquí puedes hacer lo que necesites con los datos ingresados
-        },
-        didOpen: () => {
-            const selectElement = Swal.getPopup().querySelector('#capacidadEspacio');
-            selectElement.value = capacidadEspacio;
+            const nombreEdificio = Swal.getPopup().querySelector('#nombreEdificio').value;
+            const zona = Swal.getPopup().querySelector('#zona').value;
+
+            // Crea un objeto FormData para enviar los datos del formulario
+            const formData = new FormData();
+            formData.append('idEspacio', idEspacio);
+            formData.append('nombreEspacio', nombreEspacio);
+            formData.append('capacidadEspacio', capacidadEspacio);
+            formData.append('nombreEdificio', nombreEdificio);
+            formData.append('zona', zona);
+
+            // Realiza la solicitud POST a editarEspacio.php
+            fetch('editarEspacio.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(data => {
+                Swal.fire({
+                    title: 'Edición exitosa',
+                    icon: 'success'
+                });
+                // Realiza otras acciones si es necesario
+            })
+            .catch(error => {
+                Swal.fire({
+                    title: 'Error en la edición',
+                    icon: 'error',
+                    text: 'Error al editar el espacio: ' + error
+                });
+            });
         }
     });
 }
+
+
 
 
     // Función para mostrar el modal de eliminación
@@ -239,7 +279,9 @@ function eliminarEspacio(idEspacio) {
             const nombreEspacio = btn.getAttribute('data-nombre');
             const capacidadEspacio = btn.getAttribute('data-capacidad');
             const idEspacio = btn.getAttribute('data-id');
-            mostrarModalEdicion(nombreEspacio, capacidadEspacio, idEspacio);
+            const nombreEdificio = btn.getAttribute('data-edificio');
+            const zona = btn.getAttribute('data-zona');
+            mostrarModalEdicion(nombreEspacio, capacidadEspacio, idEspacio, nombreEdificio, zona);
         });
     });
 
