@@ -2,41 +2,42 @@
 <body>
 <?php include "header.html"; ?>
 <!-- Contenido del dashboard -->
-<div class="container mt-4">
+<div class="container-fluid">
     <div class="row">
-    <div class="col-md-2">
-    <div class="form-group">
-        <!-- Menú desplegable en dispositivos móviles -->
-        <select class="form-control d-md-none">
-            <option value="espacios">Espacios</option>
-            <option value="usuarios">Usuarios</option>
-            <option value="apartos">Apartos</option>
-            <option value="consultar">Consultar</option>
-            <option value="reportes">Reportes</option>
-        </select>
-        
-        <!-- Lista de botones en dispositivos de mayor tamaño -->
-        <div class="list-group d-none d-md-block">
-            <button type="button" class="list-group-item list-group-item-action active">
-                Espacios
-            </button>
-            <button type="button" class="list-group-item list-group-item-action">
-                Usuarios
-            </button>
-            <button type="button" class="list-group-item list-group-item-action">
-                Apartos
-            </button>
-            <button type="button" class="list-group-item list-group-item-action">
-                Consultar
-            </button>
-            <button type="button" class="list-group-item list-group-item-action">
-                Reportes
-            </button>
-        </div>
-    </div>
-</div>
+        <!-- Barra lateral -->
+        <nav id="sidebar" class="col-md-2">
+            <div class="position-sticky">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="espacios.php">
+                            <i class="fas fa-home"></i> Espacios
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="usuarios.php">
+                            <i class="fas fa-user"></i> Usuarios
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="apartos.php">
+                            <i class="fas fa-building"></i> Apartos
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="consultar.php">
+                            <i class="fas fa-search"></i> Consultar
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="reportes.php">
+                            <i class="fas fa-chart-bar"></i> Reportes
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
 
-        <div class="col-md-10">
+        <div class="col-md-10 p-4">
             <h3 class="mb-4">Espacios disponibles:</h3>
             <!-- Botón para abrir el modal de agregar espacio -->
             <button type="button" class="btn btn-primary mb-4" data-toggle="modal" data-target="#modalAgregarEspacio">
@@ -140,7 +141,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../scripts/sweetAlert.js"></script>
-    
     <script>
     // Función para mostrar el modal de reserva
 function mostrarModalReserva(nombreEspacio, idEspacio) {

@@ -1,0 +1,42 @@
+.wrapper {
+    min-height: 100vh;
+    position: relative; 
+    padding-bottom: 60px; 
+}
+
+footer {
+    position: absolute;
+    bottom: 0; 
+    width: 100%;
+}
+
+.small-label {
+    font-size: 15px;
+}
+.small-input {
+    width: 130px; 
+    font-size: 15px; 
+}
+
+ /* Estilo personalizado para el menú lateral */
+ #sidebar {
+    background: #333; /* Fondo oscuro */
+    height: 600px;
+    color: #fff;
+    width: 250px; /* Ancho del menú lateral */
+    overflow-y: auto; /* Agrega una barra de desplazamiento en caso de que el contenido sea largo */
+}
+#sidebar a.nav-link {
+    color: #fff; /* Texto en blanco */
+}
+#sidebar a.nav-link:hover {
+    background: #555; /* Color de fondo al pasar el ratón */
+}
+
+
+
+@media (max-width: 768px) {
+    footer{
+        position: relative;
+    }
+}
