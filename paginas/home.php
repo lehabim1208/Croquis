@@ -78,7 +78,7 @@
                             }
                         } else {
                             // No se encontraron registros
-                            echo "No se encontraron registros en la base de datos.";
+                            echo "No se encontraron espacios disponibles en la base de datos.";
                         }
                         ?>
             </div>
@@ -180,20 +180,50 @@ function mostrarModalEdicion(nombreEspacio, capacidadEspacio, idEspacio) {
 
 
     // Función para mostrar el modal de eliminación
-    function mostrarModalEliminacion(nombreEspacio, idEspacio) {
+function mostrarModalEliminacion(nombreEspacio, idEspacio) {
+    Swal.fire({
+        title: `Eliminar ${nombreEspacio}`,
+        text: '¿Estás seguro de que deseas eliminar este espacio?',
+        showCancelButton: true,
+        confirmButtonText: 'Borrar',
+        cancelButtonText: 'Cancelar',
+        confirmButtonColor: '#dc3545'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Realiza la acción de eliminación
+            eliminarEspacio(idEspacio);
+        }
+    });
+}
+
+// Función para eliminar un espacio
+function eliminarEspacio(idEspacio) {
+    // Realiza una solicitud POST para eliminar el espacio
+    fetch('../actions/borrarEspacio.php', {
+        method: 'POST',
+        body: new URLSearchParams({ idEspacio: idEspacio }),
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+    })
+    .then(response => response.text())
+    .then(data => {
         Swal.fire({
-            title: `Eliminar ${nombreEspacio}`,
-            text: '¿Estás seguro de que deseas eliminar este espacio?',
-            showCancelButton: true,
-            confirmButtonText: 'Borrar',
-            cancelButtonText: 'Cancelar',
-            confirmButtonColor: '#dc3545'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                // Realiza la acción de eliminación
-            }
+            title: data,
+            icon: 'success', // Mostrar el mensaje
+            timer: 1500,
+            showConfirmButton: false, // No mostrar botón de confirmación
+            timerProgressBar: true, // Mostrar una barra de progreso
         });
-    }
+        setTimeout(function () {
+            location.reload(); // Recargar la página después de 2 segundos
+        }, 1500);
+    })
+    .catch(error => {
+        Swal.fire('Error al eliminar el espacio: ' + error);
+    });
+}
+
 
     // Escucha los eventos de clic en los botones y muestra los modales correspondientes
     document.querySelectorAll('.reservar-btn').forEach(btn => {
