@@ -19,13 +19,13 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="apartados.php">
-                            <i class="fas fa-building"></i> Apartados
+                        <a class="nav-link" href="horarios.php">
+                            <i class="fas fa-clock"></i> Horarios
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="consultar.php">
-                            <i class="fas fa-search"></i> Consultar
+                            <i class="fas fa-search"></i> Apartados y Consultas
                         </a>
                     </li>
                     <li class="nav-item">
@@ -37,7 +37,7 @@
             </div>
         </nav>
 
-        <div class="col-md-10 p-4">
+        <div class="col-md-10 p-4" id="contenido">
             <h3 class="mb-4">Espacios disponibles:</h3>
             <!-- Botón para abrir el modal de agregar espacio -->
             <button type="button" class="btn btn-primary mb-4" data-toggle="modal" data-target="#modalAgregarEspacio">
@@ -75,9 +75,6 @@
                                         </div>
                                     </div>
                                 </div>
-
-
-
 
                                 <?php
                             }
@@ -297,6 +294,25 @@ function eliminarEspacio(idEspacio) {
             mostrarModalEliminacion(nombreEspacio, idEspacio);
         });
     });
+</script>
+<script>
+    function ajustarPosicionFooter() {
+    const footer = document.getElementById("myFooter");
+    const container = document.getElementById("contenido");
+    
+    if (container.offsetHeight >= 500) {
+        footer.style.position = "relative";
+    } else {
+        footer.style.position = "absolute";
+    }
+}
+
+// Ajusta la posición del footer al cargar la página
+ajustarPosicionFooter();
+
+// Escucha el evento resize de la ventana para ajustar en caso de cambios en la altura
+window.addEventListener("resize", ajustarPosicionFooter);
+
 </script>
 
 </body>

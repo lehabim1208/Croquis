@@ -7,7 +7,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $contrasena = password_hash($_POST['password'], PASSWORD_DEFAULT); // Hashear la contraseña
     $correo = $_POST['correo'];
     $celular = $_POST['celular'];
-    $rol = $_POST['rol'];
+    $rol = "usuario";
 
     // Realizar la inserción en la base de datos
     $sql = "INSERT INTO usuario (nombre, password, correo, celular, rol) 
