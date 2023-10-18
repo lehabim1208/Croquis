@@ -20,8 +20,8 @@ footer {
 
  /* Estilo personalizado para el menú lateral */
  #sidebar {
-    background: #333; /* Fondo oscuro */
-    height: 600px;
+    background: #343a40; /* Fondo oscuro */
+    height: 500px;
     color: #fff;
     width: 250px; /* Ancho del menú lateral */
     overflow-y: auto; /* Agrega una barra de desplazamiento en caso de que el contenido sea largo */

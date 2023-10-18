@@ -9,7 +9,7 @@
             <div class="position-sticky">
                 <ul class="nav flex-column">
                     <li class="nav-item">
-                        <a class="nav-link active" href="espacios.php">
+                        <a class="nav-link active" href="home.php">
                             <i class="fas fa-home"></i> Espacios
                         </a>
                     </li>
@@ -19,8 +19,8 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="apartos.php">
-                            <i class="fas fa-building"></i> Apartos
+                        <a class="nav-link" href="apartados.php">
+                            <i class="fas fa-building"></i> Apartados
                         </a>
                     </li>
                     <li class="nav-item">
@@ -110,7 +110,7 @@
                     </div>
                     <div class="form-group">
                         <label for="capacidadEspacio">Capacidad:</label>
-                        <input name="capacidadEspacio" type="number" class="form-control" id="capacidadEspacio" placeholder="Capacidad" min="1" max="1000">
+                        <input name="capacidadEspacio" type="number" class="form-control" id="capacidadEspacio" placeholder="Máximo 1000" min="1" max="1000">
                     </div>
                     <div class="form-group">
                         <label for="nombreEdificio">Nombre del Edificio</label>
@@ -193,17 +193,22 @@ function mostrarModalEdicion(nombreEspacio, capacidadEspacio, idEspacio, nombreE
             formData.append('zona', zona);
 
             // Realiza la solicitud POST a editarEspacio.php
-            fetch('editarEspacio.php', {
+            fetch('../actions/editarEspacio.php', {
                 method: 'POST',
                 body: formData
             })
             .then(response => response.text())
             .then(data => {
                 Swal.fire({
-                    title: 'Edición exitosa',
-                    icon: 'success'
+                    title: 'Edición Exitosa',
+                    icon: 'success', // Mostrar el mensaje
+                    timer: 1500,
+                    showConfirmButton: false, // No mostrar botón de confirmación
+                    timerProgressBar: true, // Mostrar una barra de progreso
                 });
-                // Realiza otras acciones si es necesario
+                setTimeout(function () {
+                    location.reload(); // Recargar la página después de 2 segundos
+                }, 1500);
             })
             .catch(error => {
                 Swal.fire({

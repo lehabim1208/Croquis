@@ -6,7 +6,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $idEspacio = $_POST['idEspacio'];
     $nombreEspacio = $_POST['nombreEspacio'];
     $capacidadEspacio = $_POST['capacidadEspacio'];
-    $nombreEdificio = $_POST['nombreEdificio']; // Asegúrate de que coincida con el nombre de la columna real
+    $nombreEdificio = $_POST['nombreEdificio']; 
     $zona = $_POST['zona'];
 
     // Realiza la consulta para actualizar los datos en la base de datos
@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->bind_param("ssssi", $nombreEspacio, $capacidadEspacio, $nombreEdificio, $zona, $idEspacio);
 
     if ($stmt->execute()) {
-        // Edición exitosa
+        // Edición exitosa 
         echo "Edición exitosa.";
     } else {
         // Error en la edición
