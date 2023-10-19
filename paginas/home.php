@@ -134,29 +134,100 @@
 
     <?php include "footer.html"; ?>
     <!-- Agrega los scripts de Bootstrap y jQuery desde el CDN -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../scripts/sweetAlert.js"></script>
+
     <script>
-    // Función para mostrar el modal de reserva
-function mostrarModalReserva(nombreEspacio, idEspacio) {
+// Función para mostrar el modal de reserva con horarios desde la base de datos
+function mostrarModalNombreFecha(nombreEspacio, idEspacio) {
+    // Calcular la fecha actual
+    const currentDate = new Date();
+    
+    // Calcular la fecha dentro de un mes
+    const oneMonthFromNow = new Date(currentDate);
+    oneMonthFromNow.setMonth(currentDate.getMonth() + 1);
+    
+    // Convertir las fechas en formato ISO para establecer los atributos min y max
+    const minDate = currentDate.toISOString().split('T')[0];
+    const maxDate = oneMonthFromNow.toISOString().split('T')[0];
+    
     Swal.fire({
         title: `Reservar ${nombreEspacio}`,
         html: `
             <input id="nombreCliente" class="swal2-input" placeholder="Nombre del cliente">
-            <input id="fecha" class="swal2-input" placeholder="Fecha" type="date">
-            <input id="horario" class="swal2-input" placeholder="Horario" type="time" step="900">`,
+            <input id="fecha" class="swal2-input" placeholder="Fecha" type="date" min="${minDate}" max="${maxDate}">`,
         showCancelButton: true,
-        confirmButtonText: 'Reservar',
+        confirmButtonText: 'Siguiente',
         preConfirm: () => {
             const nombreCliente = Swal.getPopup().querySelector('#nombreCliente').value;
             const fecha = Swal.getPopup().querySelector('#fecha').value;
-            const horario = Swal.getPopup().querySelector('#horario').value;
-            // Aquí puedes hacer lo que necesites con los datos ingresados
+            // Puedes realizar validaciones aquí si es necesario
+
+            // Llama a la segunda parte para mostrar los horarios
+            mostrarModalHorarios(nombreEspacio, idEspacio, nombreCliente, fecha);
         }
     });
 }
+function mostrarModalHorarios(nombreEspacio, idEspacio, nombreCliente, fecha) {
+    // Realizar una petición AJAX para obtener los horarios desde la base de datos
+    $.ajax({
+        url: '../actions/consultarHorarios.php', // Ajusta la ruta al script PHP
+        type: 'POST',
+        data: { idEspacio: idEspacio },
+        dataType: 'json',
+        success: function(horarios) {
+            // Generar checkboxes con estilos de Bootstrap en un diseño de 3x3
+            let checkboxesHTML = '<div class="row">';
+            horarios.forEach((horario, index) => {
+                if (index % 3 === 0) {
+                    checkboxesHTML += '</div><div class="row">';
+                }
+                checkboxesHTML += `
+                    <div class="col-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" data-horario="${horario}" id="checkbox-${index}">
+                            <label class="form-check-label" for="checkbox-${index}">${horario}</label>
+                        </div>
+                    </div>`;
+            });
+            checkboxesHTML += '</div>';
+
+            Swal.fire({
+                title: `Reservar ${nombreEspacio}`,
+                html: `
+                    <p>Nombre del cliente: ${nombreCliente}</p>
+                    <p>Fecha: ${fecha}</p>
+                    <br>
+                    <div class="swal2-checkboxes">
+                        ${checkboxesHTML}
+                    </div>`,
+                showCancelButton: true,
+                confirmButtonText: 'Reservar',
+                showDenyButton: true,
+                denyButtonText: 'Regresar',
+                preConfirm: () => {
+                    const selectedCheckboxes = Swal.getPopup().querySelectorAll('.swal2-checkbox input:checked');
+                    const horariosSeleccionados = Array.from(selectedCheckboxes).map(checkbox => checkbox.getAttribute('data-horario'));
+
+                    // Aquí puedes hacer lo que necesites con los datos ingresados, incluyendo los horarios seleccionados
+                }
+            }).then((result) => {
+                if (result.isDenied) {
+                    mostrarModalNombreFecha(nombreEspacio, idEspacio);
+                }
+            });
+        },
+        error: function() {
+            Swal.fire('No disponible', 'Por el momento no hay horarios disponibles para este espacio. Vuelva más tarde', 'warning');
+        }
+    });
+}
+
+
+
+
 
 
 // Función para mostrar el modal de edición
@@ -272,7 +343,7 @@ function eliminarEspacio(idEspacio) {
         btn.addEventListener('click', () => {
             const nombreEspacio = btn.getAttribute('data-nombre');
             const idEspacio = btn.getAttribute('data-id');
-            mostrarModalReserva(nombreEspacio, idEspacio);
+            mostrarModalNombreFecha(nombreEspacio, idEspacio);
         });
     });
 

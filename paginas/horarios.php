@@ -93,7 +93,7 @@
                         }                            
                         } else {
                             // No se encontraron registros
-                            echo "No se encontraron usuarios ni administradores";
+                            echo "<br> No se encontraron horarios <br><br>";
                         }
                         ?>
                 </tbody>

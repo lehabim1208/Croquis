@@ -38,7 +38,7 @@ footer {
 
 @media (max-width: 768px) {
     footer{
-        position: relative;
+        position: relative !important;
     }
 
     #sidebar {
