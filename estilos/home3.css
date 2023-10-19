@@ -19,6 +19,11 @@ footer {
     font-size: 15px; 
 }
 
+
+.larger-swal-modal {
+    max-width: 800px;
+}
+
  /* Estilo personalizado para el menú lateral */
  #sidebar {
     background: #343a40; /* Fondo oscuro */

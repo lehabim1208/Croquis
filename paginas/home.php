@@ -163,13 +163,41 @@ function mostrarModalNombreFecha(nombreEspacio, idEspacio) {
         preConfirm: () => {
             const nombreCliente = Swal.getPopup().querySelector('#nombreCliente').value;
             const fecha = Swal.getPopup().querySelector('#fecha').value;
-            // Puedes realizar validaciones aquí si es necesario
 
             // Llama a la segunda parte para mostrar los horarios
             mostrarModalHorarios(nombreEspacio, idEspacio, nombreCliente, fecha);
         }
     });
+
+    // Obtener el botón "Siguiente"
+    const confirmButton = Swal.getConfirmButton();
+
+    // Obtener los elementos de entrada
+    const nombreClienteInput = Swal.getPopup().querySelector('#nombreCliente');
+    const fechaInput = Swal.getPopup().querySelector('#fecha');
+
+    // Deshabilitar el botón de confirmación al principio
+    confirmButton.disabled = true;
+
+    // Agregar eventos de cambio a los campos
+    nombreClienteInput.addEventListener('input', toggleConfirmButton);
+    fechaInput.addEventListener('input', toggleConfirmButton);
+
+    function toggleConfirmButton() {
+        const nombreClienteValue = nombreClienteInput.value;
+        const fechaValue = fechaInput.value;
+        
+        // Habilitar el botón si ambos campos tienen contenido y la fecha es válida
+        confirmButton.disabled = !(nombreClienteValue && fechaValue && isValidDate(fechaValue));
+    }
+
+    function isValidDate(dateString) {
+        const selectedDate = new Date(dateString);
+        return !isNaN(selectedDate) && selectedDate >= currentDate && selectedDate <= oneMonthFromNow;
+    }
 }
+
+
 function mostrarModalHorarios(nombreEspacio, idEspacio, nombreCliente, fecha) {
     // Realizar una petición AJAX para obtener los horarios desde la base de datos
     $.ajax({
