@@ -1,4 +1,15 @@
-<?php include '../config/conexion.php'; ?>
+<?php 
+include '../config/conexion.php'; 
+session_start();
+
+// Verificar si la variable de sesión 'idUsuario' está definida
+if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'administrador') {
+    // El usuario no ha iniciado sesión o no tiene el rol de "administrador", redirigir a la página de acceso denegado
+    header('Location: error-403.html');
+    exit();
+}
+
+?>
 <body>
 <?php include "header.html"; ?>
 <!-- Contenido del dashboard -->

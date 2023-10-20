@@ -14,7 +14,7 @@ include 'config/conexion.php';
     <link  rel="icon" href="" type="image/png"/>
     <title>Reservaciones</title>
 </head>
-<body>
+<body style="overflow: hidden;">  
     <div class="wrapper fadeInDown">
         <div id="formContent">
           <!-- Cabecera -->
@@ -26,11 +26,12 @@ include 'config/conexion.php';
           </div>
       
           <!-- Inicio de sesión -->
-          <form action="paginas/home.php" id="formulario">
+          <form id="formulario">
+            <!-- Campos de entrada -->
             <input type="email" id="login" class="fadeIn second" name="login" placeholder="Email" required>
-            <input type="password" id="password" class="fadeIn third" name="login" placeholder="Contraseña" required>
+            <input type="password" id="password" class="fadeIn third" name="password" placeholder="Contraseña" required>
             <input type="submit" class="fadeIn fourth" value="Entrar">
-          </form>
+        </form>
       
           <!-- Olvidé contraseña -->
           <div id="formFooter">
@@ -40,4 +41,58 @@ include 'config/conexion.php';
         </div>
       </div>
 </body>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#formulario").submit(function (e) {
+                e.preventDefault();
+                var email = $("#login").val();
+                var password = $("#password").val();
+
+                $.ajax({
+                    type: "POST",
+                    url: "actions/login.php", // Ruta al archivo PHP que maneja la autenticación
+                    data: {
+                        email: email,
+                        password: password
+                    },
+                    success: function (response) {
+                        if (response == "admin_success") {
+                            // Mostrar un modal admin
+                            Swal.fire({
+                                title: 'Iniciando sesión',
+                                icon: 'success', // Mostrar el mensaje
+                                timer: 1500,
+                                showConfirmButton: false, // No mostrar botón de confirmación
+                                timerProgressBar: true, // Mostrar una barra de progreso
+                            });
+                            setTimeout(function () {
+                              window.location.href = "paginas/home.php";
+                            }, 1600);
+                        } else if (response == "user_success") {
+                            // Mostrar un modal user
+                            Swal.fire({
+                                title: 'Bienvenido Usuario',
+                                icon: 'success', // Mostrar el mensaje
+                                timer: 1500,
+                                showConfirmButton: false, // No mostrar botón de confirmación
+                                timerProgressBar: true, // Mostrar una barra de progreso
+                            });
+                            setTimeout(function () {
+                              window.location.href = "paginas/home_usuario.php";
+                            }, 1600);
+                        } else{
+                            // Mostrar mensaje de error
+                            Swal.fire({
+                                icon: "error",
+                                title: "Error",
+                                text: "Usuario o contraseña incorrectos"
+                            });
+                        }
+                    }
+                });
+            });
+        });
+    </script>
 </html>
