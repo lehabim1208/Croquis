@@ -208,7 +208,7 @@ function mostrarModalHorarios(nombreEspacio, idEspacio, nombreCliente, fecha) {
     $.ajax({
         url: '../actions/consultarHorarios.php', // Ajusta la ruta al script PHP
         type: 'POST',
-        data: { idEspacio: idEspacio },
+        data: { idEspacio: idEspacio, fecha: fecha },
         dataType: 'json',
         success: function(horarios) {
             // Generar checkboxes con estilos de Bootstrap en un diseño de 3x3
