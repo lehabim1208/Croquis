@@ -141,9 +141,14 @@
 
     <script>
 // Función para mostrar el modal de reserva con horarios desde la base de datos
-function mostrarModalNombreFecha(nombreEspacio, idEspacio) {
-    // Calcular la fecha actual
+function mostrarModalNombreFecha(nombreEspacio, idEspacio, nombreCliente = null, fecha = null) {
+    //Saber si nombre está vacío
+    if(nombreCliente == null){
+        nombreCliente = "";
+    }
+    // Calcular la fecha actual// Obtener la fecha actual en el huso horario de Ciudad de México
     const currentDate = new Date();
+    currentDate.toLocaleString("en-US", { timeZone: "America/Mexico_City" });
     
     // Calcular la fecha dentro de un mes
     const oneMonthFromNow = new Date(currentDate);
@@ -156,8 +161,8 @@ function mostrarModalNombreFecha(nombreEspacio, idEspacio) {
     Swal.fire({
         title: `Reservar ${nombreEspacio}`,
         html: `
-            <input id="nombreCliente" class="swal2-input" placeholder="Nombre del cliente">
-            <input id="fecha" class="swal2-input" placeholder="Fecha" type="date" min="${minDate}" max="${maxDate}">`,
+            <input id="nombreCliente" class="swal2-input" placeholder="Nombre del cliente" value="${nombreCliente}">
+            <input id="fecha" class="swal2-input" placeholder="Fecha" type="date" min="${minDate}" max="${maxDate}" value="${fecha}">`,
         showCancelButton: true,
         confirmButtonText: 'Siguiente',
         preConfirm: () => {
@@ -228,13 +233,18 @@ function mostrarModalHorarios(nombreEspacio, idEspacio, nombreCliente, fecha) {
                     <p>Nombre del cliente: ${nombreCliente}</p>
                     <p>Fecha: ${fecha}</p>
                     <br>
-                    <div class="swal2-checkboxes">
+                    <div class="swal2-checkboxes checkcheck">
                         ${checkboxesHTML}
                     </div>`,
-                showCancelButton: true,
-                confirmButtonText: 'Reservar',
                 showDenyButton: true,
                 denyButtonText: 'Regresar',
+                customClass: {
+                    confirmButton: 'swalBtnColor',
+                    denyButton: 'swalBtnColor2',
+                    cancelButton : 'swalBtnColor3'
+                },
+                showCancelButton: true,
+                confirmButtonText: 'Reservar',
                 preConfirm: () => {
                     const selectedCheckboxes = Swal.getPopup().querySelectorAll('.swal2-checkbox input:checked');
                     const horariosSeleccionados = Array.from(selectedCheckboxes).map(checkbox => checkbox.getAttribute('data-horario'));
@@ -243,7 +253,7 @@ function mostrarModalHorarios(nombreEspacio, idEspacio, nombreCliente, fecha) {
                 }
             }).then((result) => {
                 if (result.isDenied) {
-                    mostrarModalNombreFecha(nombreEspacio, idEspacio);
+                    mostrarModalNombreFecha(nombreEspacio, idEspacio, nombreCliente, fecha);
                 }
             });
         },

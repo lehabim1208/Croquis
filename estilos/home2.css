@@ -18,10 +18,19 @@ footer {
     width: 130px; 
     font-size: 15px; 
 }
+.checkcheck{
+    overflow: hidden;
+    width: auto;
+}   
 
-
-.larger-swal-modal {
-    max-width: 800px;
+.swal2-styled.swal2-confirm.swalBtnColor {
+    background: #1c7ee0;
+  }
+.swal2-styled.swal2-deny.swalBtnColor2 {
+    background: #76a0c9;
+}
+.swal2-styled.swal2-cancel.swalBtnColor3 {
+    background: #dd1d1d;
 }
 
  /* Estilo personalizado para el menú lateral */
