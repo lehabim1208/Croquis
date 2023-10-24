@@ -152,11 +152,8 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'administrador') {
 
     <script>
 // Función para mostrar el modal de reserva con horarios desde la base de datos
-function mostrarModalNombreFecha(nombreEspacio, idEspacio, nombreCliente = null, fecha = null) {
-    //Saber si nombre está vacío
-    if(nombreCliente == null){
-        nombreCliente = "";
-    }
+function mostrarModalNombreFecha(nombreEspacio, idEspacio, idUsuario = null, fecha = null) {
+    
     // Calcular la fecha actual// Obtener la fecha actual en el huso horario de Ciudad de México
     const currentDate = new Date();
     currentDate.toLocaleString("en-US", { timeZone: "America/Mexico_City" });
@@ -169,19 +166,66 @@ function mostrarModalNombreFecha(nombreEspacio, idEspacio, nombreCliente = null,
     const minDate = currentDate.toISOString().split('T')[0];
     const maxDate = oneMonthFromNow.toISOString().split('T')[0];
     
+    // Crear un elemento select para nombre cliente
+    const nombreClienteSelect = document.createElement('select');
+    nombreClienteSelect.id = 'nombreCliente';
+    nombreClienteSelect.classList.add('swal2-input');
+
+    // Almacenar los nombres de los usuarios
+    const userNames = {};
+    
+
+    // Realizar una solicitud al servidor para obtener los datos de los usuarios
+    fetch('../actions/obtenerUsuarios.php', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Iterar a través de los datos y agregar opciones al select
+        data.forEach(usuario => {
+            if (usuario.rol === 'usuario' || usuario.rol === 'administrador') {
+                const option = document.createElement('option');
+                option.value = usuario.idUsuario;
+                option.textContent = usuario.nombre;
+                nombreClienteSelect.appendChild(option);
+                // Almacena el nombre en el objeto userNames
+                userNames[usuario.idUsuario] = usuario.nombre;
+            }
+        });
+        if(idUsuario != null ){
+                nombreClienteSelect.value = idUsuario;
+        }
+    })
+    .catch(error => {
+        console.error('Error al obtener datos de usuarios:', error);
+    });
+
+
+
+    // Agregar el select al modal
     Swal.fire({
         title: `Reservar ${nombreEspacio}`,
         html: `
-            <input id="nombreCliente" class="swal2-input" placeholder="Nombre del cliente" value="${nombreCliente}">
+            <div id="nombreClienteContainer">
+                <label for="nombreCliente">Nombre del cliente:</label>
+            </div>
             <input id="fecha" class="swal2-input" placeholder="Fecha" type="date" min="${minDate}" max="${maxDate}" value="${fecha}">`,
         showCancelButton: true,
         confirmButtonText: 'Siguiente',
+        didRender: () => {
+            const nombreClienteContainer = document.getElementById('nombreClienteContainer');
+            nombreClienteContainer.appendChild(nombreClienteSelect);
+        },
         preConfirm: () => {
-            const nombreCliente = Swal.getPopup().querySelector('#nombreCliente').value;
+            const selectedUserId = Swal.getPopup().querySelector('#nombreCliente').value;
+            const selectedUserName = userNames[selectedUserId]; // Obtener el nombre del usuario
             const fecha = Swal.getPopup().querySelector('#fecha').value;
 
             // Llama a la segunda parte para mostrar los horarios
-            mostrarModalHorarios(nombreEspacio, idEspacio, nombreCliente, fecha);
+            mostrarModalHorarios(nombreEspacio, idEspacio, selectedUserId, selectedUserName, fecha);
         }
     });
 
@@ -214,7 +258,7 @@ function mostrarModalNombreFecha(nombreEspacio, idEspacio, nombreCliente = null,
 }
 
 
-function mostrarModalHorarios(nombreEspacio, idEspacio, nombreCliente, fecha) {
+function mostrarModalHorarios(nombreEspacio, idEspacio, selectedUserId, nombreCliente, fecha) {
     // Realizar una petición AJAX para obtener los horarios desde la base de datos
     $.ajax({
         url: '../actions/consultarHorarios.php', // Ajusta la ruta al script PHP
@@ -257,19 +301,57 @@ function mostrarModalHorarios(nombreEspacio, idEspacio, nombreCliente, fecha) {
                 showCancelButton: true,
                 confirmButtonText: 'Reservar',
                 preConfirm: () => {
-                    const selectedCheckboxes = Swal.getPopup().querySelectorAll('.swal2-checkbox input:checked');
-                    const horariosSeleccionados = Array.from(selectedCheckboxes).map(checkbox => checkbox.getAttribute('data-horario'));
+                    const horariosSeleccionados = [];
+                    const checkboxes = document.querySelectorAll('.swal2-checkboxes input[type="checkbox"]');
+                    
+                    checkboxes.forEach(checkbox => {
+                        if (checkbox.checked) {
+                        // Accede al atributo 'data-horario' en lugar del valor del checkbox
+                        horariosSeleccionados.push(checkbox.getAttribute('data-horario'));
+                        }
+                    });
 
-                    // Aquí puedes hacer lo que necesites con los datos ingresados, incluyendo los horarios seleccionados
-                }
+                    // Crear un objeto que contenga los datos que deseas enviar al servidor
+                    const data = {
+                        horariosSeleccionados: horariosSeleccionados
+                    };
+                    console.log(data);
+
+
+                // Realizar una solicitud POST al archivo PHP
+                fetch('../actions/reservar.php', {
+                    method: 'POST',
+                    body: JSON.stringify(data.horariosSeleccionados)
+                })
+                .then(response => {
+                    if (response.ok) {
+                        Swal.fire({
+                            title: 'Reservado!',
+                            icon: 'success',
+                            text: 'La reservación se hizo con éxito. Consulta el apartado de (Apartados y Consultas)'
+                        });
+                    } else {
+                        // La solicitud no se completó con éxito
+                        Swal.fire({
+                            title: 'Error!',
+                            icon: 'error',
+                            text: 'Ocurrió un error al reservar. Vuelve a intentarlo'
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error en la solicitud: ', error);
+                });
+            }
             }).then((result) => {
                 if (result.isDenied) {
-                    mostrarModalNombreFecha(nombreEspacio, idEspacio, nombreCliente, fecha);
+                    mostrarModalNombreFecha(nombreEspacio, idEspacio, selectedUserId, fecha);
                 }
             });
         },
         error: function() {
-            Swal.fire('No disponible', 'Por el momento no hay horarios disponibles para este espacio. Vuelva más tarde', 'warning');
+            // USUARIO: Swal.fire('No disponible', 'Por el momento no hay horarios disponibles para este espacio. Vuelva más tarde', 'warning');
+            Swal.fire('No disponible', 'No hay horarios para este espacio. Vaya a la sección de Horarios y agregue uno para este espacio', 'warning');
         }
     });
 }
