@@ -12,7 +12,7 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'administrador') {
 }
 ?>
 <body>
-<?php include 'header.html'; ?>
+<?php include 'header.php'; ?>
 
     <div class="jumbotron">
         <h1 class="display-4">¡Bienvenido <?php echo $_SESSION['nombre']; ?>!</h1>

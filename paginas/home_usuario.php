@@ -13,16 +13,12 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'usuario') {
 
 ?>
 <body>
-<?php include "header.html"; ?>
+<?php include "header.php"; ?>
 <!-- Contenido del dashboard -->
 <div class="container-fluid pr-4 pl-4 pt-4">
     <div class="row">
         <div class="col-md-10 p-4" id="contenido">
             <h3 class="mb-4">Espacios disponibles:</h3>
-            <!-- Botón para abrir el modal de agregar espacio -->
-            <button type="button" class="btn btn-primary mb-4" data-toggle="modal" data-target="#modalAgregarEspacio">
-                <i class="fas fa-plus"></i> Agregar
-            </button>
 
             <!-- Contenido del dashboard aquí -->
             <div class="row">
@@ -49,7 +45,7 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'usuario') {
                                             <p class="card-text">Capacidad: <?php echo $capacidadEspacio; ?> personas</p>
                                             <p class="card-text">Nombre Edifico: <?php echo $nombreEdificio; ?></p>
                                             <p class="card-text">Zona o región: <?php echo $zonaRegion; ?></p>
-                                            <button type="button" class="btn btn-primary reservar-btn" data-nombre="<?php echo $nombreEspacio; ?>" data-id="<?php echo $id; ?>">Reservar</button>
+                                            <button type="button" class="btn btn-primary reservar-btn" data-nombre="<?php echo $nombreEspacio; ?>" data-id="<?php echo $id; ?>">Consultar</button>
                                             <button type="button" class="btn btn-warning editar-btn" data-nombre="<?php echo $nombreEspacio; ?>" data-capacidad="<?php echo $capacidadEspacio; ?>" data-id="<?php echo $id; ?>" data-edificio="<?php echo $nombreEdificio; ?>" data-zona="<?php echo $zonaRegion; ?>"><i class="fas fa-pencil-alt"></i></button>
                                             <button type="button" class="btn btn-danger eliminar-btn" data-nombre="<?php echo $nombreEspacio; ?>" data-id="<?php echo $id; ?>"><i class="fas fa-trash-alt"></i></button>
                                         </div>

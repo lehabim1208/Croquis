@@ -13,7 +13,7 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'administrador') {
 
 ?>
 <body>
-<?php include "header.html"; ?>
+<?php include "header.php"; ?>
 <!-- Contenido del dashboard -->
 <div class="container-fluid pr-4 pl-4 pt-4">
     <div class="row">

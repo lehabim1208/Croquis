@@ -12,14 +12,14 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'usuario') {
 }
 ?>
 <body>
-<?php include 'header.html'; ?>
+<?php include 'header.php'; ?>
 
     <div class="jumbotron">
         <h1 class="display-4">¡Bienvenido <?php echo $_SESSION['nombre']; ?>!</h1>
         <p class="lead">Hoy es un buen día para reservar :)</p>
         <hr class="my-4">
         <p>Consulta los espacios, fechas y horarios en el botón de abajo.</p>
-        <a class="btn btn-primary btn-lg" href="home_usuarios.php" role="button">Disponibilidad!</a>
+        <a class="btn btn-primary btn-lg" href="home_usuario.php" role="button">Disponibilidad!</a>
     </div>
 
     <?php include 'footer.html'; ?>

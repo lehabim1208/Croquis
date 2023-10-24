@@ -2,10 +2,10 @@
 include '../config/conexion.php'; 
 session_start();
 
-$currentPage = 'usuarios';
+$currentPage = 'consultas';
 
 // Verificar si la variable de sesión 'idUsuario' está definida
-if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'administrador') {
+if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'usuario') {
     // El usuario no ha iniciado sesión o no tiene el rol de "administrador", redirigir a la página de acceso denegado
     header('Location: error-403.html');
     exit();
@@ -18,44 +18,72 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'administrador') {
 <div class="container-fluid pr-4 pl-4 pt-4">
     <div class="row">
         <div class="col-md-10 p-4" id="contenido">
-            <h3 class="mb-4">Usuarios y Administradores:</h3>
-            <!-- Botón para abrir el modal de agregar usuario -->
-            <button type="button" class="btn btn-primary mb-4" data-toggle="modal" data-target="#modalAgregarEspacio">
+            <h3 class="mb-4">Reservaciones:</h3>
+            <!--<button type="button" class="btn btn-primary mb-4" data-toggle="modal" data-target="#modalAgregarEspacio">
                 <i class="fas fa-plus"></i> Agregar
-            </button>
+            </button> -->
             
 <div class="table-responsive">
 <table class="table table-light" id="tbl">
                 <thead>
                     <tr class="table-info">
-                    <th scope="col">IdUsuario</th>
-                    <th scope="col">Nombre</th>
-                    <th scope="col">Correo</th>
-                    <th scope="col">Rol</th>
-                    <th scope="col">Celular</th>
+                    <th scope="col"># Reserva</th>
+                    <th scope="col">Espacio</th>
+                    <th scope="col">Hora Mínima</th>
+                    <th scope="col">Hora Máxima</th>
+                    <th scope="col">Fecha</th>
+                    <th scope="col">Usuario</th>
                     </tr>
                 </thead>
                 <tbody>
                 <?php
+                        $usuarioSelect = $_SESSION['idUsuario'];
                         // Realiza la consulta a la base de datos
-                        $sql = "SELECT idUsuario, nombre, correo, rol, celular FROM usuario";
+                        $sql = "SELECT idReserva, idCatalogo, horaMax, horaMin, fecha, id_Cliente FROM reserva WHERE id_cliente = '$usuarioSelect'";
                         $resultado = $conn->query($sql);
 
                         if ($resultado->num_rows > 0) {
                             // Itera sobre los resultados
                             while ($fila = $resultado->fetch_assoc()) {
-                                $idUsuario = $fila['idUsuario'];
-                                $nombre = $fila['nombre'];
-                                $correo = $fila['correo'];
-                                $rol = $fila['rol'];
-                                $celular = $fila['celular'];
+                                $idReserva = $fila['idReserva'];
+                                $idCatalogo = $fila['idCatalogo'];
+                                $horaMax = $fila['horaMax'];
+                                $horaMin = $fila['horaMin'];
+                                $fecha = $fila['fecha'];
+                                $idCliente = $fila['id_Cliente'];
+
+                                //OBTENER NOMBRE ESPACIO A PARTIR DE ID
+                                $sqlCatalogo = "SELECT nombre FROM catalogo WHERE idCatalogo = '$idCatalogo'";
+                                $resultadoCatalogo = $conn->query($sqlCatalogo);
+
+                                if ($resultadoCatalogo) {
+                                    $filaCatalogo = $resultadoCatalogo->fetch_assoc(); // Obtener la primera fila de resultados
+                                    $nombreEspacio = $filaCatalogo['nombre'];
+                                } else {
+                                    // Manejar el error si la consulta falla
+                                    echo 'Error en la consulta de catálogo: ' . $conn->error;
+                                }
+
+                                //OBTENER NOMBRE USUARIO A PARTIR DE ID
+                                $sqlUsuario = "SELECT nombre FROM usuario WHERE idUsuario = '$idCliente'";
+                                $resultadoUsuario= $conn->query($sqlUsuario);
+
+                                if ($resultadoUsuario) {
+                                    $filaUsuario = $resultadoUsuario->fetch_assoc(); // Obtener la primera fila de resultados
+                                    $nombreUsuario= $filaUsuario['nombre'];
+                                } else {
+                                    // Manejar el error si la consulta falla
+                                    echo 'Error en la consulta de catálogo: ' . $conn->error;
+                                }
+
                                 ?>
                                 <tr>
-                                    <th scope="row"><?php echo $idUsuario; ?></th>
-                                    <td><?php echo $nombre; ?></td>
-                                    <td><?php echo $correo; ?></td>
-                                    <td><?php echo $rol; ?></td>
-                                    <td><?php echo $celular; ?></td>
+                                    <th scope="row"><?php echo $idReserva; ?></th>
+                                    <td><?php echo $nombreEspacio; ?></td>
+                                    <td><?php echo $horaMin; ?></td>
+                                    <td><?php echo $horaMax; ?></td>
+                                    <td><?php echo $fecha; ?></td>
+                                    <td><?php echo $nombreUsuario; ?></td>
                                 </tr>
                                 <?php
                             }
