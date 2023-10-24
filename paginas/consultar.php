@@ -60,8 +60,8 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'administrador') {
                     <tr class="table-info">
                     <th scope="col"># Reserva</th>
                     <th scope="col">Espacio</th>
-                    <th scope="col">Hora Máxima</th>
                     <th scope="col">Hora Mínima</th>
+                    <th scope="col">Hora Máxima</th>
                     <th scope="col">Fecha</th>
                     <th scope="col">Usuario</th>
                     </tr>
@@ -110,8 +110,8 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'administrador') {
                                 <tr>
                                     <th scope="row"><?php echo $idReserva; ?></th>
                                     <td><?php echo $nombreEspacio; ?></td>
-                                    <td><?php echo $horaMax; ?></td>
                                     <td><?php echo $horaMin; ?></td>
+                                    <td><?php echo $horaMax; ?></td>
                                     <td><?php echo $fecha; ?></td>
                                     <td><?php echo $nombreUsuario; ?></td>
                                 </tr>

@@ -10,7 +10,7 @@ $sql = "SELECT horario FROM horarios WHERE idCatalogo = $idEspacio";
 $result = $conn->query($sql);
 
 // Consulta SQL para obtener los horarios ocupados en la tabla "reserva" para la fecha dada
-$sqlreservas = "SELECT horario FROM reserva WHERE DATE(fecha) = DATE('$fecha')";
+$sqlreservas = "SELECT horario FROM reserva WHERE DATE(fecha) = DATE('$fecha') AND idCatalogo = '$idEspacio'";
 $resultreservas = $conn->query($sqlreservas);
 
 // Verificar si se obtuvieron resultados

@@ -265,91 +265,106 @@ function mostrarModalHorarios(nombreEspacio, idEspacio, selectedUserId, nombreCl
         type: 'POST',
         data: { idEspacio: idEspacio, fecha: fecha },
         dataType: 'json',
-        success: function(horarios) {
-            // Generar checkboxes con estilos de Bootstrap en un diseño de 3x3
-            let checkboxesHTML = '<div class="row">';
-            horarios.forEach((horario, index) => {
-                if (index % 3 === 0) {
-                    checkboxesHTML += '</div><div class="row">';
-                }
-                checkboxesHTML += `
-                    <div class="col-4">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" data-horario="${horario}" id="checkbox-${index}">
-                            <label class="form-check-label" for="checkbox-${index}">${horario}</label>
-                        </div>
-                    </div>`;
-            });
-            checkboxesHTML += '</div>';
-
-            Swal.fire({
-                title: `Reservar ${nombreEspacio}`,
-                html: `
-                    <p>Nombre del cliente: ${nombreCliente}</p>
-                    <p>Fecha: ${fecha}</p>
-                    <br>
-                    <div class="swal2-checkboxes checkcheck">
-                        ${checkboxesHTML}
-                    </div>`,
-                showDenyButton: true,
-                denyButtonText: 'Regresar',
-                customClass: {
-                    confirmButton: 'swalBtnColor',
-                    denyButton: 'swalBtnColor2',
-                    cancelButton : 'swalBtnColor3'
-                },
-                showCancelButton: true,
-                confirmButtonText: 'Reservar',
-                preConfirm: () => {
-                    const horariosSeleccionados = [];
-                    const checkboxes = document.querySelectorAll('.swal2-checkboxes input[type="checkbox"]');
-                    
-                    checkboxes.forEach(checkbox => {
-                        if (checkbox.checked) {
-                        // Accede al atributo 'data-horario' en lugar del valor del checkbox
-                        horariosSeleccionados.push(checkbox.getAttribute('data-horario'));
-                        }
-                    });
-
-                    // Crear un objeto que contenga los datos que deseas enviar al servidor
-                    const data = {
-                        horariosSeleccionados: horariosSeleccionados
-                    };
-                    console.log(data);
-
-
-                // Realizar una solicitud POST al archivo PHP
-                fetch('../actions/reservar.php', {
-                    method: 'POST',
-                    body: JSON.stringify(data.horariosSeleccionados)
-                })
-                .then(response => {
-                    if (response.ok) {
-                        Swal.fire({
-                            title: 'Reservado!',
-                            icon: 'success',
-                            text: 'La reservación se hizo con éxito. Consulta el apartado de (Apartados y Consultas)'
-                        });
-                    } else {
-                        // La solicitud no se completó con éxito
-                        Swal.fire({
-                            title: 'Error!',
-                            icon: 'error',
-                            text: 'Ocurrió un error al reservar. Vuelve a intentarlo'
-                        });
-                    }
-                })
-                .catch(error => {
-                    console.error('Error en la solicitud: ', error);
-                });
-            }
-            }).then((result) => {
-                if (result.isDenied) {
+        success: function (horarios) {
+            if (horarios.length === 0) {
+                // No hay horarios disponibles, muestra el modal de advertencia
+                Swal.fire({
+                    title: 'No disponible',
+                    text: 'No hay horarios para esta fecha. Consulte otro día',
+                    icon: 'warning',
+                    confirmButtonText: 'Cambiar fecha' // Cambiar el texto del botón de confirmación
+                }).then(() => {
+                    // Cuando el usuario haga clic en "Cambiar fecha", llama a mostrarModalNombreFecha
                     mostrarModalNombreFecha(nombreEspacio, idEspacio, selectedUserId, fecha);
-                }
-            });
+                });
+            } else {
+                // Generar checkboxes con estilos de Bootstrap en un diseño de 3x3
+                let checkboxesHTML = '<div class="row">';
+                horarios.forEach((horario, index) => {
+                    if (index % 3 === 0) {
+                        checkboxesHTML += '</div><div class="row">';
+                    }
+                    checkboxesHTML += `
+                        <div class="col-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" data-horario="${horario}" id="checkbox-${index}">
+                                <label class="form-check-label" for="checkbox-${index}">${horario}</label>
+                            </div>
+                        </div>`;
+                });
+                checkboxesHTML += '</div';
+
+                Swal.fire({
+                    title: `Reservar ${nombreEspacio}`,
+                    html: `
+                        <p>Nombre del cliente: ${nombreCliente}</p>
+                        <p>Fecha: ${fecha}</p>
+                        <p style="color: #cfbe1e;">*Seleccione los horarios que necesite para su evento*</p>
+                        <br>
+                        <div class="swal2-checkboxes checkcheck">
+                            ${checkboxesHTML}
+                        </div>`,
+                    showDenyButton: true,
+                    denyButtonText: 'Regresar',
+                    customClass: {
+                        confirmButton: 'swalBtnColor',
+                        denyButton: 'swalBtnColor2',
+                        cancelButton: 'swalBtnColor3'
+                    },
+                    showCancelButton: true,
+                    confirmButtonText: 'Reservar',
+                    preConfirm: () => {
+                        const horariosSeleccionados = [];
+                        const checkboxes = document.querySelectorAll('.swal2-checkboxes input[type="checkbox"]');
+
+                        checkboxes.forEach(checkbox => {
+                            if (checkbox.checked) {
+                                // Accede al atributo 'data-horario' en lugar del valor del checkbox
+                                horariosSeleccionados.push(checkbox.getAttribute('data-horario'));
+                            }
+                        });
+
+                        // Crear un objeto que contenga los datos que deseas enviar al servidor
+                        const data = {
+                            horariosSeleccionados: horariosSeleccionados,
+                            fecha: fecha,
+                            selectedUserId: selectedUserId,
+                            idEspacio: idEspacio
+                        };
+
+                        // Realizar una solicitud POST al archivo PHP
+                        fetch('../actions/reservar.php', {
+                            method: 'POST',
+                            body: JSON.stringify(data)
+                        })
+                            .then(response => {
+                                if (response.ok) {
+                                    Swal.fire({
+                                        title: 'Reservado!',
+                                        icon: 'success',
+                                        text: 'La reservación se hizo con éxito. Consulta el apartado de (Apartados y Consultas)'
+                                    });
+                                } else {
+                                    // La solicitud no se completó con éxito
+                                    Swal.fire({
+                                        title: 'Error!',
+                                        icon: 'error',
+                                        text: 'Ocurrió un error al reservar. Vuelve a intentarlo'
+                                    });
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error en la solicitud: ', error);
+                            });
+                    }
+                }).then((result) => {
+                    if (result.isDenied) {
+                        mostrarModalNombreFecha(nombreEspacio, idEspacio, selectedUserId, fecha);
+                    }
+                });
+            } 
         },
-        error: function() {
+        error: function () {
             // USUARIO: Swal.fire('No disponible', 'Por el momento no hay horarios disponibles para este espacio. Vuelva más tarde', 'warning');
             Swal.fire('No disponible', 'No hay horarios para este espacio. Vaya a la sección de Horarios y agregue uno para este espacio', 'warning');
         }

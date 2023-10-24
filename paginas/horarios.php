@@ -55,7 +55,8 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'administrador') {
                 <i class="fas fa-plus"></i> Agregar
             </button>
             
-            <table class="table">
+<div class="table-responsive">
+<table class="table table-light" id="tbl">
                 <thead>
                     <tr class="table-info">
                     <th scope="col">IdHorario</th>
@@ -109,6 +110,7 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'administrador') {
                         ?>
                 </tbody>
             </table>
+            </div>
         </div>
     </div>
 </div>

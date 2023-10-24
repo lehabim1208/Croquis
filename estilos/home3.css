@@ -37,7 +37,7 @@ footer {
  #sidebar {
     background: #343a40; /* Fondo oscuro */
     height: auto;
-    color: #fff;
+    color: #ffffff;
     width: 250px; /* Ancho del menú lateral */
     overflow-y: auto; /* Agrega una barra de desplazamiento en caso de que el contenido sea largo */
 }
