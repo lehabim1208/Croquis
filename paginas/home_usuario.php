@@ -1,3 +1,0 @@
-<?php
-echo "ERES USUARIO";
-?>

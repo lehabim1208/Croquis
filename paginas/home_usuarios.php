@@ -5,7 +5,7 @@ session_start();
 $currentPage = 'espacios';
 
 // Verificar si la variable de sesión 'idUsuario' está definida
-if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'administrador') {
+if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'usuario') {
     // El usuario no ha iniciado sesión o no tiene el rol de "administrador", redirigir a la página de acceso denegado
     header('Location: error-403.html');
     exit();

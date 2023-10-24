@@ -2,6 +2,8 @@
 include '../config/conexion.php'; 
 session_start();
 
+$currentPage = 'usuarios';
+
 // Verificar si la variable de sesión 'idUsuario' está definida
 if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'administrador') {
     // El usuario no ha iniciado sesión o no tiene el rol de "administrador", redirigir a la página de acceso denegado
@@ -13,41 +15,8 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'administrador') {
 <body>
 <?php include "header.html"; ?>
 <!-- Contenido del dashboard -->
-<div class="container-fluid">
+<div class="container-fluid pr-4 pl-4 pt-4">
     <div class="row">
-        <!-- Barra lateral -->
-        <nav id="sidebar" class="col-md-2">
-            <div class="position-sticky">
-                <ul class="nav flex-column">
-                    <li class="nav-item">
-                        <a class="nav-link" href="home.php">
-                            <i class="fas fa-home"></i> Espacios
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="usuarios.php">
-                            <i class="fas fa-user"></i> Usuarios
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="horarios.php">
-                            <i class="fas fa-clock"></i> Horarios
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="consultar.php">
-                            <i class="fas fa-search"></i> Apartados y Consultas
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="reportes.php">
-                            <i class="fas fa-chart-bar"></i> Reportes
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
-
         <div class="col-md-10 p-4" id="contenido">
             <h3 class="mb-4">Usuarios y Administradores:</h3>
             <!-- Botón para abrir el modal de agregar usuario -->
