@@ -178,6 +178,7 @@ function mostrarModalNombreFecha(nombreEspacio, idEspacio, idUsuario = null, fec
     Swal.fire({
         title: `Reservar ${nombreEspacio}`,
         html: `
+        <p class="text-info">Seleccione un cliente y una fecha</p>
             <div id="nombreClienteContainer">
                 <label for="nombreCliente">Nombre del cliente:</label>
             </div>
@@ -266,9 +267,9 @@ function mostrarModalHorarios(nombreEspacio, idEspacio, selectedUserId, nombreCl
                 Swal.fire({
                     title: `Reservar ${nombreEspacio}`,
                     html: `
+                    <p class="text-info">Seleccione los horarios que necesita el cliente para su evento</p>
                         <p>Nombre del cliente: ${nombreCliente}</p>
                         <p>Fecha: ${fecha}</p>
-                        <p style="color: #cfbe1e;">*Seleccione los horarios que necesite para su evento*</p>
                         <br>
                         <div class="swal2-checkboxes checkcheck">
                             ${checkboxesHTML}

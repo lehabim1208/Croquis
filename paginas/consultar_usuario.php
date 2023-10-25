@@ -32,7 +32,6 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'usuario') {
                     <th scope="col">Hora Mínima</th>
                     <th scope="col">Hora Máxima</th>
                     <th scope="col">Fecha</th>
-                    <th scope="col">Usuario</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -83,7 +82,6 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'usuario') {
                                     <td><?php echo $horaMin; ?></td>
                                     <td><?php echo $horaMax; ?></td>
                                     <td><?php echo $fecha; ?></td>
-                                    <td><?php echo $nombreUsuario; ?></td>
                                 </tr>
                                 <?php
                             }

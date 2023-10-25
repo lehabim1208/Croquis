@@ -64,50 +64,6 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'usuario') {
     </div>
 </div>
 
-<!-- Modal para agregar espacio -->
-<div class="modal fade" id="modalAgregarEspacio" tabindex="-1" role="dialog" aria-labelledby="modalAgregarEspacioLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modalAgregarEspacioLabel">Agregar Espacio</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <!-- Formulario para agregar un nuevo espacio -->
-                <form action="../actions/crearEspacio.php" method="POST">
-                    <div class="form-group">
-                        <label for="nombreEspacio">Nombre del Espacio</label>
-                        <input name="nombreEspacio" type="text" class="form-control" id="nombreEspacio" placeholder="Nombre del Espacio">
-                    </div>
-                    <div class="form-group">
-                        <label for="capacidadEspacio">Capacidad:</label>
-                        <input name="capacidadEspacio" type="number" class="form-control" id="capacidadEspacio" placeholder="Máximo 1000" min="1" max="1000">
-                    </div>
-                    <div class="form-group">
-                        <label for="nombreEdificio">Nombre del Edificio</label>
-                        <input name="nombreEdificio" type="text" class="form-control" id="nombreEdificio" placeholder="Nombre del Edificio">
-                    </div>
-                    <div class="form-group">
-                        <label for="zonaRegion">Zona o Región</label>
-                        <select name="zonaRegion" class="form-control" id="zonaRegion">
-                            <option value="Xalapa-Veracruz">Xalapa-Veracruz</option>
-                            <option value="Veracruz-Puerto">Veracruz-Puerto</option>
-                            <option value="Poza-Rica">Poza-Rica</option>
-                        </select>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                        <button type="submit" class="btn btn-primary">Guardar</button>
-                    </div>
-                </form>
-
-            </div>
-        </div>
-    </div>
-</div>
-
     <?php include "footer.html"; ?>
     <!-- Agrega los scripts de Bootstrap y jQuery desde el CDN -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -115,112 +71,89 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'usuario') {
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../scripts/sweetAlert.js"></script>
 
-    <script>
-// Función para mostrar el modal de reserva con horarios desde la base de datos
-function mostrarModalNombreFecha(nombreEspacio, idEspacio, idUsuario = null, fecha = null) {
-    
-    // Calcular la fecha actual// Obtener la fecha actual en el huso horario de Ciudad de México
-    const currentDate = new Date();
-    currentDate.toLocaleString("en-US", { timeZone: "America/Mexico_City" });
-    
-    // Calcular la fecha dentro de un mes
-    const oneMonthFromNow = new Date(currentDate);
-    oneMonthFromNow.setMonth(currentDate.getMonth() + 1);
-    
-    // Convertir las fechas en formato ISO para establecer los atributos min y max
-    const minDate = currentDate.toISOString().split('T')[0];
-    const maxDate = oneMonthFromNow.toISOString().split('T')[0];
-    
-    // Crear un elemento select para nombre cliente
-    const nombreClienteSelect = document.createElement('select');
-    nombreClienteSelect.id = 'nombreCliente';
-    nombreClienteSelect.classList.add('swal2-input');
+<script>
+    var idUsuario = <?php echo $_SESSION['idUsuario']; ?>;
+    var nombreUsuario = "<?php echo $_SESSION['nombre']; ?>";
+    // Función para mostrar el modal de reserva con horarios desde la base de datos
+    function mostrarModalNombreFecha(nombreEspacio, idEspacio, fecha = null) {
 
-    // Almacenar los nombres de los usuarios
-    const userNames = {};
-    
+            // Calcular la fecha actual
+        const currentDate = new Date();
+        currentDate.toLocaleString("en-US", { timeZone: "America/Mexico_City" });
 
-    // Realizar una solicitud al servidor para obtener los datos de los usuarios
-    fetch('../actions/obtenerUsuarios.php', {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        // Iterar a través de los datos y agregar opciones al select
-        data.forEach(usuario => {
-            if (usuario.rol === 'usuario' || usuario.rol === 'administrador') {
-                const option = document.createElement('option');
-                option.value = usuario.idUsuario;
-                option.textContent = usuario.nombre;
-                nombreClienteSelect.appendChild(option);
-                // Almacena el nombre en el objeto userNames
-                userNames[usuario.idUsuario] = usuario.nombre;
+        // Calcular la fecha dentro de un mes
+        const oneMonthFromNow = new Date(currentDate);
+        oneMonthFromNow.setMonth(currentDate.getMonth() + 1);
+
+        // Convertir las fechas en formato ISO para establecer los atributos min y max
+        const minDate = currentDate.toISOString().split('T')[0];
+        const maxDate = oneMonthFromNow.toISOString().split('T')[0];
+
+        // Obtener el nombre del usuario desde la sesión en PHP
+        const nombreUsuario = "<?php echo $_SESSION['nombre']; ?>";
+        const idUsuario = <?php echo $_SESSION['idUsuario']; ?>;
+
+        // Crear un select deshabilitado con una única opción
+        const usuarioSelect = document.createElement('select');
+        usuarioSelect.id = 'usuario';
+        usuarioSelect.classList.add('swal2-input');
+        usuarioSelect.disabled = true;
+        const usuarioOption = document.createElement('option');
+        usuarioOption.value = idUsuario;
+        usuarioOption.textContent = nombreUsuario;
+        usuarioSelect.appendChild(usuarioOption);
+
+        // Agregar el select al modal
+        Swal.fire({
+            title: `Reservar: ${nombreEspacio}`,
+            html: `
+            <p class="text-info">Seleccione una fecha para consultar horarios disponibles</p>
+                <div id="usuarioContainer">
+                    
+                </div>
+                <input id="fecha" class="swal2-input" placeholder="Fecha" type="date" min="${minDate}" max="${maxDate}" value="${fecha}">`,
+            showCancelButton: true,
+            confirmButtonText: 'Siguiente',
+            didRender: () => {
+                const usuarioContainer = document.getElementById('usuarioContainer');
+                usuarioContainer.appendChild(usuarioSelect);
+            },
+            preConfirm: () => {
+                const selectedUserId = idUsuario;
+                const selectedUserName = nombreUsuario; // Obtener el nombre del usuario desde la variable JavaScript
+                const fecha = Swal.getPopup().querySelector('#fecha').value;
+
+                // Llama a la segunda parte para mostrar los horarios
+                mostrarModalHorarios(nombreEspacio, idEspacio, selectedUserId, selectedUserName, fecha);
             }
         });
-        if(idUsuario != null ){
-                nombreClienteSelect.value = idUsuario;
-        }
-    })
-    .catch(error => {
-        console.error('Error al obtener datos de usuarios:', error);
-    });
 
+        // Obtener el botón "Siguiente"
+const confirmButton = Swal.getConfirmButton();
 
+// Obtener el elemento de entrada de fecha
+const fechaInput = Swal.getPopup().querySelector('#fecha');
 
-    // Agregar el select al modal
-    Swal.fire({
-        title: `Reservar ${nombreEspacio}`,
-        html: `
-            <div id="nombreClienteContainer">
-                <label for="nombreCliente">Nombre del cliente:</label>
-            </div>
-            <input id="fecha" class="swal2-input" placeholder="Fecha" type="date" min="${minDate}" max="${maxDate}" value="${fecha}">`,
-        showCancelButton: true,
-        confirmButtonText: 'Siguiente',
-        didRender: () => {
-            const nombreClienteContainer = document.getElementById('nombreClienteContainer');
-            nombreClienteContainer.appendChild(nombreClienteSelect);
-        },
-        preConfirm: () => {
-            const selectedUserId = Swal.getPopup().querySelector('#nombreCliente').value;
-            const selectedUserName = userNames[selectedUserId]; // Obtener el nombre del usuario
-            const fecha = Swal.getPopup().querySelector('#fecha').value;
+// Deshabilitar el botón de confirmación al principio
+confirmButton.disabled = true;
 
-            // Llama a la segunda parte para mostrar los horarios
-            mostrarModalHorarios(nombreEspacio, idEspacio, selectedUserId, selectedUserName, fecha);
-        }
-    });
+// Agregar un evento de cambio al campo de fecha
+fechaInput.addEventListener('input', toggleConfirmButton);
 
-    // Obtener el botón "Siguiente"
-    const confirmButton = Swal.getConfirmButton();
+function toggleConfirmButton() {
+    const fechaValue = fechaInput.value;
 
-    // Obtener los elementos de entrada
-    const nombreClienteInput = Swal.getPopup().querySelector('#nombreCliente');
-    const fechaInput = Swal.getPopup().querySelector('#fecha');
-
-    // Deshabilitar el botón de confirmación al principio
-    confirmButton.disabled = true;
-
-    // Agregar eventos de cambio a los campos
-    nombreClienteInput.addEventListener('input', toggleConfirmButton);
-    fechaInput.addEventListener('input', toggleConfirmButton);
-
-    function toggleConfirmButton() {
-        const nombreClienteValue = nombreClienteInput.value;
-        const fechaValue = fechaInput.value;
-        
-        // Habilitar el botón si ambos campos tienen contenido y la fecha es válida
-        confirmButton.disabled = !(nombreClienteValue && fechaValue && isValidDate(fechaValue));
-    }
-
-    function isValidDate(dateString) {
-        const selectedDate = new Date(dateString);
-        return !isNaN(selectedDate) && selectedDate >= currentDate && selectedDate <= oneMonthFromNow;
-    }
+    // Habilitar el botón si el campo de fecha tiene contenido y la fecha es válida
+    confirmButton.disabled = !(fechaValue && isValidDate(fechaValue));
 }
+
+function isValidDate(dateString) {
+    const selectedDate = new Date(dateString);
+    return !isNaN(selectedDate) && selectedDate >= currentDate && selectedDate <= oneMonthFromNow;
+}
+
+    }
+
 
 
 function mostrarModalHorarios(nombreEspacio, idEspacio, selectedUserId, nombreCliente, fecha) {
@@ -262,9 +195,9 @@ function mostrarModalHorarios(nombreEspacio, idEspacio, selectedUserId, nombreCl
                 Swal.fire({
                     title: `Reservar ${nombreEspacio}`,
                     html: `
-                        <p>Nombre del cliente: ${nombreCliente}</p>
+                        <p class="text-info">Seleccione los horarios que necesite para su evento</p>
+                        <p>Nombre: ${nombreCliente}</p>
                         <p>Fecha: ${fecha}</p>
-                        <p style="color: #cfbe1e;">*Seleccione los horarios que necesite para su evento*</p>
                         <br>
                         <div class="swal2-checkboxes checkcheck">
                             ${checkboxesHTML}
@@ -307,7 +240,7 @@ function mostrarModalHorarios(nombreEspacio, idEspacio, selectedUserId, nombreCl
                                     Swal.fire({
                                         title: 'Reservado!',
                                         icon: 'success',
-                                        text: 'La reservación se hizo con éxito. Consulta el apartado de (Apartados y Consultas)'
+                                        text: 'La reservación se hizo con éxito. Consulta el apartado de (Mis reservas)'
                                     });
                                 } else {
                                     // La solicitud no se completó con éxito
@@ -330,8 +263,7 @@ function mostrarModalHorarios(nombreEspacio, idEspacio, selectedUserId, nombreCl
             } 
         },
         error: function () {
-            // USUARIO: Swal.fire('No disponible', 'Por el momento no hay horarios disponibles para este espacio. Vuelva más tarde', 'warning');
-            Swal.fire('No disponible', 'No hay horarios para este espacio. Vaya a la sección de Horarios y agregue uno para este espacio', 'warning');
+            Swal.fire('No disponible', 'Por el momento no hay horarios disponibles para este espacio. Vuelva más tarde', 'warning');
         }
     });
 }
