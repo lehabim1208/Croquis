@@ -87,7 +87,7 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'usuario') {
                             }
                         } else {
                             // No se encontraron registros
-                            echo "No se encontraron usuarios ni administradores";
+                            echo "Aún no tienes ninguna reservación";
                         }
                         ?>
                 </tbody>

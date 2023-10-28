@@ -19,10 +19,14 @@
           </div>
       
           <form action="actions/registrar.php" method="post" id="formulario">
-            <input type="text" class="fadeIn second" name="nombre" placeholder="Nombre" required>
-            <input type="email"  class="fadeIn second" name="correo" placeholder="Correo" required>
+            <input type="text" class="fadeIn second" name="nombre" id="nombre" placeholder="Nombre" required>
+            <p style="color: red;" id="nombreError" class="error"></p>
+            <input type="email" class="fadeIn second" name="correo" id="correo" placeholder="Correo" required>
+            <p style="color: red;" id="correoError" class="error"></p>
             <input type="password" id="password" class="fadeIn third" name="password" placeholder="Contraseña" required>
-            <input type="number"  class="fadeIn second" name="celular" placeholder="Celular" required>
+            <input type="number" class="fadeIn second" name="celular" id="celular" placeholder="Celular" required>
+            <p style="color: red;" id="celularError" class="error"></p>
+
             <br><br>
             <input type="submit" class="fadeIn fourth" value="Registrarse">
           </form>
@@ -34,5 +38,116 @@
       
         </div>
       </div>
+
+      <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+      <script>
+        document.addEventListener("DOMContentLoaded", function() {
+          const nombreInput = document.getElementById("nombre");
+          const correoInput = document.getElementById("correo");
+          const celularInput = document.getElementById("celular");
+          const registroButton = document.querySelector(".fadeIn.fourth");
+      
+          const nombreError = document.getElementById("nombreError");
+          const correoError = document.getElementById("correoError");
+          const celularError = document.getElementById("celularError");
+      
+          nombreInput.addEventListener("input", validateNombre);
+          correoInput.addEventListener("input", validateCorreo);
+          celularInput.addEventListener("input", validateCelular);
+      
+          function validateNombre() {
+            const nombreValue = nombreInput.value.trim();
+            if (!/^[a-zA-Z]+(?: [a-zA-Z]+)*$/.test(nombreValue)) {
+                nombreError.textContent = "Nombre inválido";
+                registroButton.disabled = true;
+            } else {
+                nombreError.textContent = "";
+                registroButton.disabled = false;
+            }
+            }
+
+      
+            function validateCorreo() {
+                const correoValue = correoInput.value.trim();
+                if (!/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/.test(correoValue)) {
+                    correoError.textContent = "Correo inválido";
+                } else {
+                    correoError.textContent = "";
+                    // Realizar la validación en la base de datos
+                    checkCorreoInDatabase(correoValue);
+                }
+                enableDisableRegistroButton();
+            }
+      
+            function validateCelular() {
+            const celularValue = celularInput.value.trim();
+            if (celularValue.length !== 10 || isNaN(celularValue) || celularValue < 0) {
+                celularError.textContent = "Celular inválido";
+            } else {
+                celularError.textContent = "";
+                // Realizar la validación en la base de datos
+                checkCelularInDatabase(celularValue);
+            }
+            enableDisableRegistroButton();
+            }
+
+      
+          function checkCorreoInDatabase(correo) {
+            fetch("../actions/verificar_correo.php", {
+                method: "POST",
+                body: "email=" + correo, // Enviar datos en formato x-www-form-urlencoded
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            })
+                .then(response => response.text())
+                .then(data => {
+                if (data === "exists") {
+                    correoError.textContent = "Ya existe una cuenta con este correo.";
+                    registroButton.disabled = true;
+                } else if (data === "not_exists") {
+                    // El correo no existe, no hay error
+                    correoError.textContent = "";
+                } else {
+                    console.error("Error en la respuesta del servidor: " + data);
+                }
+                })
+                .catch(error => {
+                console.error("Error al verificar el correo en la base de datos: " + error);
+                });
+            }
+      
+            function checkCelularInDatabase(celular) {
+                fetch("../actions/verificar_celular.php", {
+                    method: "POST",
+                    body: "phone=" + celular, // Enviar datos en formato x-www-form-urlencoded
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                })
+                    .then(response => response.text())
+                    .then(data => {
+                    if (data === "exists") {
+                        celularError.textContent = "Ya existe una cuenta con este celular";
+                        registroButton.disabled = true;
+                    } else if (data === "not_exists") {
+                        // El celular no existe, no hay error
+                        celularError.textContent = "";
+                    } else {
+                        console.error("Error en la respuesta del servidor: " + data);
+                    }
+                    })
+                    .catch(error => {
+                    console.error("Error al verificar el celular en la base de datos: " + error);
+                    });
+                }
+
+                function enableDisableRegistroButton() {
+                    // Habilitar el botón de registro solo si no hay errores en los campos
+                    if (nombreError.textContent === "" && correoError.textContent === "" && celularError.textContent === "") {
+                        registroButton.disabled = false;
+                    } else {
+                        registroButton.disabled = true;
+                    }
+                }
+        });
+      </script>      
+        
 </body>
 </html>
