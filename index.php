@@ -1,3 +1,15 @@
+<?php
+// Iniciar la sesión (si aún no está iniciada)
+session_start();
+
+// Verificar si hay una sesión activa
+if (isset($_SESSION['idUsuario'])) {
+    // La sesión está activa, redirige al usuario a la página "/paginas"
+    header("Location: /paginas");
+    exit();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,11 +27,13 @@
         <div id="formContent">
           <!-- Cabecera -->
           <h1 class="active"> Bienvenido </h1>
+          <h3>Reservaciones UV</h3>
       
           <!-- Icono -->
           <div class="fadeIn first">
-            <img src="https://i.ibb.co/rysLySr/open-door-svgrepo-com.png" id="icon" alt="User Icon" style="width: 80px; padding-bottom:10px;"/>
+              <img src="https://i.ibb.co/mCwfvsv/calendar-svgrepo-com.png" id="icon" alt="User Icon" style="width: 80px; padding-bottom:10px;"/>
           </div>
+
             <a href="login.html"><input type="submit" class="fadeIn fourth" value="Iniciar sesión" style="cursor: pointer;"></a>
             <a href="registro.html"><input type="submit" class="fadeIn fourth" value="Registrarse" style="cursor: pointer;"></a>
         </div>

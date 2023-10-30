@@ -357,8 +357,12 @@ function mostrarModalEdicion(nombreEspacio, capacidadEspacio, idEspacio, nombreE
             <input id="capacidadEspacio" class="small-input swal2-input" type="number" placeholder="Capacidad" min="1" max="1000" value="${capacidadEspacio}"><br>
             <label class="small-label" for="nombreEdificio">Edificio:</label>
             <input id="nombreEdificio" class="small-input swal2-input" placeholder="Nombre del edificio" value="${nombreEdificio}"><br>
-            <label class="small-label" for="zona">Zona:</label>
-            <input id="zona" class="small-input swal2-input" placeholder="Zona o región" value="${zona}"><br>
+            <label style="display:inline;" class="small-label" for="zona">Zona: </label>
+            <select style="width: 50%; display:inline; margin-left: 20px; margin-top: 18px" id="zona" class="small-input swal2-input form-control">
+                <option value="Xalapa-Veracruz" ${zona === 'Xalapa-Veracruz' ? 'selected' : ''}>Xalapa-Veracruz</option>
+                <option value="Veracruz-Puerto" ${zona === 'Veracruz-Puerto' ? 'selected' : ''}>Veracruz-Puerto</option>
+                <option value="Poza-Rica" ${zona === 'Poza-Rica' ? 'selected' : ''}>Poza-Rica</option>
+            </select><br>
         `,
         showCancelButton: true,
         confirmButtonText: 'Guardar',

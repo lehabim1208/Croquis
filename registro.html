@@ -20,12 +20,12 @@
       
           <form action="actions/registrar.php" method="post" id="formulario">
             <input type="text" class="fadeIn second" name="nombre" id="nombre" placeholder="Nombre" required>
-            <p style="color: red;" id="nombreError" class="error"></p>
+            <span style="color: red;" id="nombreError" class="error"></span>
             <input type="email" class="fadeIn second" name="correo" id="correo" placeholder="Correo" required>
-            <p style="color: red;" id="correoError" class="error"></p>
+            <span style="color: red; display: block;" id="correoError" class="error"></span>
             <input type="password" id="password" class="fadeIn third" name="password" placeholder="Contraseña" required>
             <input type="number" class="fadeIn second" name="celular" id="celular" placeholder="Celular" required>
-            <p style="color: red;" id="celularError" class="error"></p>
+            <span style="color: red; display: block;" id="celularError" class="error"></span>
 
             <br><br>
             <input type="submit" class="fadeIn fourth" value="Registrarse">
@@ -40,6 +40,16 @@
       </div>
 
       <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+      <script>
+        // Espera a que la página se cargue completamente
+        window.onload = function () {
+            // Selecciona el campo de entrada por su ID
+            var emailInput = document.getElementById('nombre');
+    
+            // Establece el enfoque en el campo de entrada de correo electrónico
+            emailInput.focus();
+        };
+    </script>
       <script>
         document.addEventListener("DOMContentLoaded", function() {
           const nombreInput = document.getElementById("nombre");

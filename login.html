@@ -45,6 +45,17 @@ include 'config/conexion.php';
 <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
+      // Espera a que la página se cargue completamente
+      window.onload = function () {
+          // Selecciona el campo de entrada por su ID
+          var emailInput = document.getElementById('login');
+  
+          // Establece el enfoque en el campo de entrada de correo electrónico
+          emailInput.focus();
+      };
+  </script>
+  
+    <script>
         $(document).ready(function () {
             $("#formulario").submit(function (e) {
                 e.preventDefault();

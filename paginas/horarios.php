@@ -66,7 +66,7 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'administrador') {
                                 <td><?php echo $nombreEspacio; ?></td>
                                 <td>
                                     <button class="btn btn-primary editar-horario" data-id="<?php echo $idHorario; ?>" data-horario="<?php echo $horario; ?>" data-catalogo="<?php echo $idCatalogo ?>"><i class="fas fa-pencil-alt"></i></button>
-                                    <button class="btn btn-danger eliminar-horario" data-id="<?php echo $idHorario; ?>"><i class="fas fa-trash-alt"></i></button>
+                                    <button class="btn btn-danger eliminar-horario" data-id="<?php echo $idHorario; ?>" data-horario="<?php echo $horario; ?>"><i class="fas fa-trash-alt"></i></button>
                                 </td>
 
                             </tr>
@@ -98,7 +98,23 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'administrador') {
                 <form action="../actions/crearHorario.php" method="POST">
                     <div class="form-group">
                         <label for="horario">Horario:</label>
-                        <input name="horario" type="text" class="form-control" id="horario" placeholder="3pm-4pm">
+                        <select name="horario" class="form-control" id="horario">
+                            <option value="7am-8am">7am-8am</option>
+                            <option value="8am-9am">8am-9am</option>
+                            <option value="9am-10am">9am-10am</option>
+                            <option value="10am-11am">10am-11am</option>
+                            <option value="11am-12pm">11am-12pm</option>
+                            <option value="12pm-1pm">12pm-1pm</option>
+                            <option value="1pm-2pm">1pm-2pm</option>
+                            <option value="2pm-3pm">2pm-3pm</option>
+                            <option value="3pm-4pm">3pm-4pm</option>
+                            <option value="4pm-5pm">4pm-5pm</option>
+                            <option value="5pm-6pm">5pm-6pm</option>
+                            <option value="6pm-7pm">6pm-7pm</option>
+                            <option value="7pm-8pm">7pm-8pm</option>
+                            <option value="8pm-9pm">8pm-9pm</option>
+                            <option value="9pm-10pm">9pm-10pm</option>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label for="rol">Espacio:</label>
@@ -137,6 +153,44 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'administrador') {
     <script src="../scripts/sweetAlert.js"></script>
 
     <script>
+        $(document).ready(function() {
+            $('#modalAgregarEspacio').on('hidden.bs.modal', function() {
+                // Limpia los campos del formulario cuando se cierra el modal
+                $('#horario').val('');
+                $('#seleccionCatalogo').val('');
+            });
+
+            $('form[action="../actions/crearHorario.php"]').submit(function(event) {
+                event.preventDefault();
+                
+                $.ajax({
+                    type: "POST",
+                    url: $(this).attr('action'),
+                    data: $(this).serialize(),
+                    dataType: "json",
+                    success: function(response) {
+                        if (response.error) {
+                            // Mostrar un modal de SweetAlert2 con el mensaje de error
+                            Swal.fire('Error', response.error, 'error');
+                        } else if (response.success) {
+                            // Recargar la página después de un segundo si se crea el horario con éxito
+                            Swal.fire({
+                                title: 'Éxito',
+                                text: response.success,
+                                icon: 'success',
+                                timer: 1000,
+                                showConfirmButton: false
+                            }).then(function() {
+                                location.reload();
+                            });
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+
+    <script>
     $(document).on('click', '.editar-horario', function() {
     const idHorario = $(this).data('id');
     const horario = $(this).data('horario');
@@ -159,55 +213,76 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'administrador') {
 
     
     const selectOptions = options.map(option => {
-    return `<option value="${option.idCatalogo}" ${option.idCatalogo == catalogo ? 'selected' : ''}>${option.nombre}</option>`;
-}).join('');
+    const isSelected = option.idCatalogo == catalogo ? 'selected' : '';
+    return `<option value="${option.idCatalogo}" ${isSelected}>${option.nombre}</option>`;
+    }).join('');
 
-    Swal.fire({
-        title: 'Editar Horario',
-        html: 
-            '<form id="editar-horario-form" action="../actions/editarHorario.php" method="POST">' +
-            '<div class="form-group">' +
-            '<label for="horario">Horario:</label>' +
-            '<input name="horario" type="text" class="form-control" id="horario" value="' + horario + '">' +
-            '</div>' +
-            '<div class="form-group">' +
-            '<label for="seleccionCatalogo">Espacio:</label>' +
-            '<select class="form-control" name="seleccionCatalogo" id="seleccionCatalogo">' + selectOptions + '</select>' +
-            '</div>' +
-            '<input type="hidden" name="idHorario" value="' + idHorario + '">' +
-            '</form>',
-        showCancelButton: true,
-        confirmButtonText: 'Guardar',
-        preConfirm: () => {
-            // Obtener los valores del formulario y realizar la petición AJAX para enviar los datos a editarHorario.php
-            const horario = Swal.getPopup().querySelector('#horario').value;
-            const seleccionCatalogo = Swal.getPopup().querySelector('#seleccionCatalogo').value;
-            const idHorario = Swal.getPopup().querySelector('[name="idHorario"]').value;
+Swal.fire({
+    title: 'Editar Horario',
+    html:
+        '<form id="editar-horario-form" action="../actions/editarHorario.php" method="POST">' +
+        '<div class="form-group">' +
+        '<label for="horario">Horario:</label>' +
+        '<select name="horario" class="form-control" id="horario">' +
+        '<option value="7am-8am">7am-8am</option>' +
+        '<option value="8am-9am">8am-9am</option>' +
+        '<option value="9am-10am">9am-10am</option>' +
+        '<option value="10am-11am">10am-11am</option>' +
+        '<option value="11am-12pm">11am-12pm</option>' +
+        '<option value="12pm-1pm">12pm-1pm</option>' +
+        '<option value="1pm-2pm">1pm-2pm</option>' +
+        '<option value="2pm-3pm">2pm-3pm</option>' +
+        '<option value="3pm-4pm">3pm-4pm</option>' +
+        '<option value="4pm-5pm">4pm-5pm</option>' +
+        '<option value="5pm-6pm">5pm-6pm</option>' +
+        '<option value="6pm-7pm">6pm-7pm</option>' +
+        '<option value="7pm-8pm">7pm-8pm</option>' +
+        '<option value="8pm-9pm">8pm-9pm</option>' +
+        '<option value="9pm-10pm">9pm-10pm</option>' +
+        '</select>' +
+        '</div>' +
+        '<div class="form-group">' +
+        '<label for="seleccionCatalogo">Espacio:</label>' +
+        '<select class="form-control" name="seleccionCatalogo" id="seleccionCatalogo">' + selectOptions + '</select>' +
+        '</div>' +
+        '<input type="hidden" name="idHorario" value="' + idHorario + '">' +
+        '</form>',
+    showCancelButton: true,
+    confirmButtonText: 'Guardar',
+    onBeforeOpen: (modalElement) => {
+        const horarioSelect = modalElement.querySelector('#horario');
+        // Asigna el valor de "horario" al menú desplegable
+        horarioSelect.value = horario;
+    },
+    preConfirm: () => {
+        // Obtener los valores del formulario y realizar la petición AJAX para enviar los datos a editarHorario.php
+        const horario = Swal.getPopup().querySelector('#horario').value;
+        const seleccionCatalogo = Swal.getPopup().querySelector('#seleccionCatalogo').value;
+        const idHorario = Swal.getPopup().querySelector('[name="idHorario"]').value;
 
-            // Hacer una petición AJAX para enviar los datos de edición a editarHorario.php
-            $.ajax({
-                url: '../actions/editarHorario.php',
-                type: 'POST',
-                data: { idHorario: idHorario, horario: horario, seleccionCatalogo: seleccionCatalogo },
-                success: function(response) {
-                    if (response === 'success') {
-                        Swal.fire({
-                            title: 'Éxito',
-                            text: 'El horario ha sido editado correctamente.',
-                            icon: 'success',
-                            timer: 1000, // Duración en milisegundos (1 segundo)
-                            showConfirmButton: false // Ocultar el botón "Aceptar"
-                        }).then(() => {
-                                location.reload();
-                        });
-                    }
-                    else {
-                        Swal.fire('Error', 'Ocurrió un error al editar el horario.', 'error');
-                    }
+        // Hacer una petición AJAX para enviar los datos de edición a editarHorario.php
+        $.ajax({
+            url: '../actions/editarHorario.php',
+            type: 'POST',
+            data: { idHorario: idHorario, horario: horario, seleccionCatalogo: seleccionCatalogo },
+            success: function(response) {
+                if (response === 'success') {
+                    Swal.fire({
+                        title: 'Éxito',
+                        text: 'El horario ha sido editado correctamente.',
+                        icon: 'success',
+                        timer: 1000, // Duración en milisegundos (1 segundo)
+                        showConfirmButton: false // Ocultar el botón "Aceptar"
+                    }).then(() => {
+                            location.reload();
+                    });
+                } else {
+                    Swal.fire('Error', 'Ocurrió un error al editar el horario.', 'error');
                 }
-            });
-        }
-    });
+            }
+        });
+    }
+});
 });
 </script>
 
@@ -216,10 +291,11 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'administrador') {
     // Cuando se hace clic en el botón "Eliminar"
     $(document).on('click', '.eliminar-horario', function() {
     const idHorario = $(this).data('id');
+    const horario = $(this).data('horario');
     // Aquí debes mostrar el modal de SweetAlert2 para confirmar la eliminación
     Swal.fire({
         title: '¿Estás seguro?',
-        text: `¿Quieres eliminar el horario con ID ${idHorario}?`,
+        text: `¿Quieres eliminar el horario: ${horario}?`,
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: 'Sí, eliminar',
