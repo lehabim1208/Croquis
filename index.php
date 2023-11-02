@@ -4,9 +4,22 @@ session_start();
 
 // Verificar si hay una sesión activa
 if (isset($_SESSION['idUsuario'])) {
-    // La sesión está activa, redirige al usuario a la página "/paginas"
-    header("Location: /paginas");
-    exit();
+    $rolUsuario = $_SESSION['rol']; // Obtén el valor del usuario desde la sesión
+
+    // Verificar si es administrador
+    if ($rolUsuario == 'administrador') {
+        // La sesión está activa y el usuario es un administrador, redirige al administrador a una página específica
+        header("Location: /paginas/index.php");
+        exit();
+    } elseif ($rolUsuario == 'usuario') {
+        // La sesión está activa y el usuario es un usuario normal, redirige al usuario a una página específica
+        header("Location: /paginas/index_usuario.php");
+        exit();
+    } else {
+        // Si no se reconoce el tipo de usuario, puedes redirigir a una página de error o realizar alguna otra acción
+        header("Location: /paginas/error-403.html");
+        exit();
+    }
 }
 ?>
 

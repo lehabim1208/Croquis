@@ -207,7 +207,6 @@ svg.key {
 
 </svg>
 
-<!-- include in a container a heading, paragraph and svg for the keyhole -->
 <div class="container">
 	<h1>403</h1>
 	<p>ACCESO DENEGADO</p>
@@ -216,15 +215,10 @@ svg.key {
 	</svg>
 </div>
 
-<!-- outside of the container, to have them absolute positioned in relation to the body, include an svg for the key and one for the ghost -->
+
 <svg class="key">
 	<use href="#key" />
 </svg>
-
-<!--
-  ! nest the svg in a vi, give the svg and vi the same class
-  the div and svg behave differently when translating the element through the transform property, giving a nice distance between the text (included with a pseudo element on the div) and the svg
--->
 <div class="ghost">
 	<svg class="ghost">
 		<use href="#ghost" />
@@ -234,7 +228,7 @@ svg.key {
 <script>
     // Redirigir a la página deseada después de 45 segundos
     setTimeout(function () {
-        window.location.href = "../";
+        window.location.href = "../login.html";
     }, 45000); // 45 segundos = 45000 milisegundos
 </script>
 </html>

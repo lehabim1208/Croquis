@@ -18,7 +18,7 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'usuario') {
 <div class="container-fluid pr-4 pl-4 pt-4">
     <div class="row">
         <div class="col-md-10 p-4" id="contenido">
-            <h3 class="mb-4">Reservaciones:</h3>
+            <h3 class="mb-4">Mis reservaciones:</h3>
             <select class="form-control" name="filtro" id="filtro">
                 <option value="1">Todas</option>
                 <option value="2">Pendientes</option>
@@ -28,119 +28,214 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'usuario') {
             <br>
             <div class="row">
                 <!-- Tarjetas Bootstrap para mostrar las reservaciones -->
-                <?php
-                $usuarioSelect = $_SESSION['idUsuario'];
-                $sql = "SELECT idReserva, idCatalogo, horaMax, horaMin, fecha, id_Cliente FROM reserva WHERE id_cliente = '$usuarioSelect'";
-                $resultado = $conn->query($sql);
+        <?php
+        $usuarioSelect = $_SESSION['idUsuario'];
+        $sql = "SELECT r.idReserva, r.idCatalogo, r.horaMax, r.horaMin, r.fecha, r.id_Cliente, c.nombre AS nombreEspacio, u.nombre AS nombreUsuario
+                FROM reserva r
+                JOIN catalogo c ON r.idCatalogo = c.idCatalogo
+                JOIN usuario u ON r.id_Cliente = u.idUsuario
+                WHERE r.id_cliente = '$usuarioSelect'
+                ORDER BY r.fecha, r.idCatalogo, r.horaMin";
 
-                if ($resultado->num_rows > 0) {
-                    while ($fila = $resultado->fetch_assoc()) {
-                        $idReserva = $fila['idReserva'];
-                        $idCatalogo = $fila['idCatalogo'];
-                        $horaMax = $fila['horaMax'];
-                        $horaMin = $fila['horaMin'];
-                        $fecha = $fila['fecha'];
-                        $idCliente = $fila['id_Cliente'];
+        $resultado = $conn->query($sql);
 
-                        $sqlCatalogo = "SELECT nombre FROM catalogo WHERE idCatalogo = '$idCatalogo'";
-                        $resultadoCatalogo = $conn->query($sqlCatalogo);
+        if ($resultado->num_rows > 0) {
+            $reservas_agrupadas = array();
 
-                        if ($resultadoCatalogo) {
-                            $filaCatalogo = $resultadoCatalogo->fetch_assoc();
-                            $nombreEspacio = $filaCatalogo['nombre'];
-                        } else {
-                            echo 'Error en la consulta de catálogo: ' . $conn->error;
-                        }
+            while ($fila = $resultado->fetch_assoc()) {
+                $idReserva = $fila['idReserva'];
+                $idCatalogo = $fila['idCatalogo'];
+                $horaMax = $fila['horaMax'];
+                $horaMin = $fila['horaMin'];
+                $fecha = $fila['fecha'];
+                $idCliente = $fila['id_Cliente'];
+                $nombreEspacio = $fila['nombreEspacio'];
+                $nombreUsuario = $fila['nombreUsuario'];
 
-                        $sqlUsuario = "SELECT nombre FROM usuario WHERE idUsuario = '$idCliente'";
-                        $resultadoUsuario = $conn->query($sqlUsuario);
-
-                        if ($resultadoUsuario) {
-                            $filaUsuario = $resultadoUsuario->fetch_assoc();
-                            $nombreUsuario = $filaUsuario['nombre'];
-                        } else {
-                            echo 'Error en la consulta de catálogo: ' . $conn->error;
-                        }
-                        ?>
-                        <!-- Tarjeta Bootstrap para cada reserva -->
-                        <div class="col-lg-4">
-                            <div class="card" style="display: block;">
-                            <div class="card-body" style="border-width: 1px; border-style: solid; border-color: #000;">
-                                <h5 class="card-title">Id Reserva: <?php echo $idReserva; ?></h5>
-                                <p class="card-text" data-tipo="nombreEspacio">Espacio: <?php echo $nombreEspacio; ?></p>
-                                <p class="card-text">Hora Mínima: <?php echo $horaMin; ?></p>
-                                <p class="card-text">Hora Máxima: <?php echo $horaMax; ?></p>
-                                <p class="card-text" data-tipo="fecha">Fecha: <?php echo $fecha; ?></p>
-                                <button type="button" class="btn btn-warning editar-btn" data-id="<?php echo $idReserva; ?>"><i class="fas fa-pencil-alt"></i></button>
-                                <button type="button" class="btn btn-danger eliminar-btn" data-id="<?php echo $idReserva; ?>"><i class="fas fa-trash-alt"></i></button>
-                            </div>
-                            </div>
-                        </div>
-                        <?php
-                    }
+                if (!count($reservas_agrupadas) ||
+                    $reservas_agrupadas[count($reservas_agrupadas) - 1]['fecha'] !== $fecha ||
+                    $reservas_agrupadas[count($reservas_agrupadas) - 1]['idCatalogo'] !== $idCatalogo ||
+                    $reservas_agrupadas[count($reservas_agrupadas) - 1]['idCliente'] !== $idCliente ||
+                    $reservas_agrupadas[count($reservas_agrupadas) - 1]['horaMax'] !== $horaMin
+                ) {
+                    // Agregar nueva reserva agrupada
+                    $reservas_agrupadas[] = array(
+                        'idReserva' => $idReserva,
+                        'idCatalogo' => $idCatalogo,
+                        'horaMin' => $horaMin,
+                        'horaMax' => $horaMax,
+                        'fecha' => $fecha,
+                        'idCliente' => $idCliente,
+                        'nombreEspacio' => $nombreEspacio,
+                        'nombreUsuario' => $nombreUsuario,
+                    );
                 } else {
-                    // No se encontraron registros
-                    echo "Aún no tienes ninguna reservación";
+                    // Actualizar la hora máxima de la última reserva agrupada
+                    $reservas_agrupadas[count($reservas_agrupadas) - 1]['horaMax'] = $horaMax;
                 }
-                ?>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- Modal para agregar usuarios -->
-<div class="modal fade" id="modalAgregarEspacio" tabindex="-1" role="dialog" aria-labelledby="modalAgregarEspacioLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modalAgregarEspacioLabel">Agregar Usuario o Administrador</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <!-- Formulario para agregar un nuevo espacio -->
-                <form action="../actions/registrarDentro.php" method="POST">
-                    <div class="form-group">
-                        <label for="nombre">Nombre:</label>
-                        <input name="nombre" type="text" class="form-control" id="nombre" placeholder="Juán Pérez">
-                    </div>
-                    <div class="form-group">
-                        <label for="password">Contraseña:</label>
-                        <input name="password" type="password" class="form-control" id="password" placeholder="*********">
-                    </div>
-                    <div class="form-group">
-                        <label for="correo">Correo:</label>
-                        <input name="correo" type="email" class="form-control" id="correo" placeholder="ejemplo@correo.com">
-                    </div>
-                    <div class="form-group">
-                        <label for="celular">Celular:</label>
-                        <input name="celular" type="number" class="form-control" id="celular" placeholder="A 10 dígitos" maxlength="10">
-                    </div>
-                    <div class="form-group">
-                        <label for="rol">Rol:</label>
-                        <select name="rol" class="form-control" id="rol">
-                            <option value="usuario">Usuario</option>
-                            <option value="administrador">Administrador</option>
-                        </select>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                        <button type="submit" class="btn btn-primary">Guardar</button>
-                    </div>
-                </form>
+            }
 
+            function compararFechas($a, $b) {
+                // Convierte las fechas en formato 'Y-m-d' a timestamps para comparar
+                $fechaTimestampA = strtotime($a['fecha']);
+                $fechaTimestampB = strtotime($b['fecha']);
+            
+                // Compara las fechas en orden descendente
+                if ($fechaTimestampA == $fechaTimestampB) {
+                    return 0;
+                }
+                return ($fechaTimestampA > $fechaTimestampB) ? -1 : 1;
+            }
+            
+            // Ordenar el arreglo de reservas por fecha en orden descendente
+            usort($reservas_agrupadas, 'compararFechas');
+            
+            // Obtener la fecha actual
+            $fechaActual = date('Y-m-d');
+            
+            foreach ($reservas_agrupadas as $reserva) {
+                $fechaReserva = $reserva['fecha'];
+            
+                $botonDeshabilitado = $fechaReserva < $fechaActual;
+            
+                ?>
+                <div class="col-lg-4">
+                    <div class="card" style="display: block; margin-bottom:30px;">
+                        <div class="card-body" style="border-width: 1px; border-style: solid; border-color: #000;">
+                            <h5 class="card-title">Folio: 0000<?php echo $reserva['idReserva']; ?></h5>
+                            <p class="card-text" data-tipo="nombreEspacio">Espacio: <?php echo $reserva['nombreEspacio']; ?></p>
+                            <p class "card-text">Hora Inicio: <?php echo $reserva['horaMin']; ?> hrs.</p>
+                            <p class="card-text">Hora Final: <?php echo $reserva['horaMax']; ?> hrs.</p>
+                            <p class="card-text" data-tipo="fecha">Fecha: <?php echo $reserva['fecha']; ?></p>
+                            <?php if ($botonDeshabilitado): ?>
+                                <p style="margin-bottom: 48px;"></p>
+                            <?php endif; ?>
+                            <?php if (!$botonDeshabilitado): ?>
+                                <button type="button" class="btn btn-warning editar-btn" data-id="<?php echo $reserva['idReserva']; ?>"><i class="fas fa-pencil-alt"></i></button>
+                                <button type="button" class="btn btn-danger eliminar-btn" data-id="<?php echo $reserva['idReserva']; ?>"><i class="fas fa-trash-alt"></i></button>
+                                <button style="font-size:12px;" type="button" class="btn btn-info reportar-btn" data-toggle="modal" data-target="#reportModal" data-id="<?php echo $reserva['idReserva']; ?>">Reportar</button>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+                <?php
+            }
+
+            echo '</div>
+                </div>
             </div>
-        </div>
+        </div>';
+        } else {
+            // No se encontraron registros
+            echo "Aún no tienes ninguna reservación";
+        }
+        ?>
+
+<!-- Modal para enviar el reporte -->
+<div class="modal fade" id="reportModal" tabindex="-1" role="dialog" aria-labelledby="reportModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="reportModalLabel">Reportar reservación: 0000<span id="idReservaDisplay"></span></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <!-- Formulario para enviar el reporte -->
+        <form id="reportForm">
+          <div class="form-group">
+            <label for="asunto">Asunto:</label>
+            <input type="text" class="form-control" id="asunto" name="asunto">
+          </div>
+          <div class="form-group">
+            <label for="descripcion">Descripción:</label>
+            <textarea class="form-control" id="descripcion" name="descripcion" rows="4"></textarea>
+          </div>
+          <!-- Campo oculto para enviar el idReserva -->
+          <input type="hidden" id="idReserva" name="idReserva" value="">
+          <button type="submit" class="btn btn-primary">Enviar</button>
+        </form>
+      </div>
     </div>
+  </div>
 </div>
 
 
     <?php include "footer.html"; ?>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="../scripts/sweetAlert.js"></script>
 
+
+    <script>
+        // JavaScript para obtener el idReserva del botón y establecerlo en el formulario
+        $('.reportar-btn').click(function() {
+            var idReserva = $(this).data('id');
+            $('#idReserva').val(idReserva);
+            $('#idReservaDisplay').text(idReserva);
+        });
+
+        // JavaScript para enviar el formulario a través de AJAX como solicitud JSON
+        $('#reportForm').submit(function(e) {
+            e.preventDefault();
+            var formData = {
+                idReserva: $('#idReserva').val(),
+                asunto: $('#asunto').val(),
+                descripcion: $('#descripcion').val(),
+            };
+
+            $.ajax({
+                type: 'POST',
+                url: '../actions/enviarReporte.php',
+                data: JSON.stringify(formData),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                success: function(response) {
+                    if (response.success) {
+                        // Utiliza SweetAlert2 para mostrar un modal de éxito
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Éxito',
+                            text: 'Reporte enviado con éxito.',
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                $('#reportModal').modal('hide');
+                            }
+                        });
+                    } else {
+                        // Utiliza SweetAlert2 para mostrar un modal de error
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Error al enviar el reporte: ' + response.message,
+                        });
+                    }
+                },
+                error: function() {
+                    // Utiliza SweetAlert2 para mostrar un modal de error
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Hubo un error al enviar el reporte.',
+                    });
+                }
+            });
+        });
+    </script>
+
+
+    <script>
+        // Agrega un evento clic a los botones de edición y eliminación
+        document.querySelectorAll('.editar-btn, .eliminar-btn').forEach(function(button) {
+        button.addEventListener('click', function(event) {
+            const idReserva = event.target.getAttribute('data-id');
+            
+            // Ahora tienes el ID de la reserva en la variable idReserva
+            console.log('ID de la reserva:', idReserva);
+        });
+        });
+    </script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             var filtroSelect = document.getElementById("filtro");
