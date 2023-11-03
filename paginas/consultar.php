@@ -17,7 +17,7 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'administrador') {
 <!-- Contenido del dashboard -->
 <div class="container-fluid pr-4 pl-4 pt-4">
     <div class="row">
-        <div class="col-md-10 p-4" id="contenido">
+        <div class="col-md-12 p-4" id="contenido">
             <h3 class="mb-4">Reservaciones:</h3>
             <!--<button type="button" class="btn btn-primary mb-4" data-toggle="modal" data-target="#modalAgregarEspacio">
                 <i class="fas fa-plus"></i> Agregar
