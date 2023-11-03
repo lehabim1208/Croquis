@@ -8,8 +8,7 @@ if ($data) {
     $idReserva = $data['idReserva'];
     $asunto = $data['asunto'];
     $descripcion = $data['descripcion'];
-    $id_cliente = "";
-    $estado = "En proceso";
+    $estado = "En espera";
 
     //OBTENER ID CLIENTE DE RESERVA
     $sqlReserva = "SELECT id_cliente FROM reserva WHERE idReserva = '$idReserva'";
@@ -28,13 +27,13 @@ if ($data) {
     $fecha_hora = date('Y-m-d H:i:s');
 
     // Prepara la sentencia SQL para insertar el reporte
-    $sql = "INSERT INTO reportes (asunto, descripcion, fecha_hora, idCatalogo, correo, estado) VALUES (?, ?, ?, ?, '', ?)";
+    $sql = "INSERT INTO reportes (asunto, descripcion, fecha_hora, idReserva, idCliente, estado) VALUES (?, ?, ?, ?, ?, ?)";
 
     $stmt = $conn->prepare($sql);
 
     if ($stmt) {
         // Asocia los parámetros
-        $stmt->bind_param("sssss", $asunto, $descripcion, $fecha_hora, $idReserva, $estado);
+        $stmt->bind_param("sssiis", $asunto, $descripcion, $fecha_hora, $idReserva, $id_cliente, $estado);
 
         // Ejecuta la sentencia SQL
         if ($stmt->execute()) {

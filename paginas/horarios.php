@@ -17,7 +17,7 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'administrador') {
 <!-- Contenido del dashboard -->
 <div class="container-fluid pr-4 pl-4 pt-4">
     <div class="row">
-        <div class="col-md-10 p-4" id="contenido">
+        <div class="col-md-12 p-4" id="contenido">
             <h3 class="mb-4">Horarios:</h3>
             <!-- Botón para abrir el modal de agregar usuario -->
             <button type="button" class="btn btn-primary mb-4" data-toggle="modal" data-target="#modalAgregarEspacio">
@@ -65,7 +65,7 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'administrador') {
                                 <td><?php echo $idCatalogo; ?></td>
                                 <td><?php echo $nombreEspacio; ?></td>
                                 <td>
-                                    <button class="btn btn-primary editar-horario" data-id="<?php echo $idHorario; ?>" data-horario="<?php echo $horario; ?>" data-catalogo="<?php echo $idCatalogo ?>"><i class="fas fa-pencil-alt"></i></button>
+                                    <button class="btn btn-warning editar-horario" data-id="<?php echo $idHorario; ?>" data-horario="<?php echo $horario; ?>" data-catalogo="<?php echo $idCatalogo ?>"><i class="fas fa-pencil-alt"></i></button>
                                     <button class="btn btn-danger eliminar-horario" data-id="<?php echo $idHorario; ?>" data-horario="<?php echo $horario; ?>"><i class="fas fa-trash-alt"></i></button>
                                 </td>
 

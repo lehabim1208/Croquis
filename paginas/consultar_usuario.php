@@ -198,12 +198,19 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'usuario') {
                             icon: 'success',
                             title: 'Éxito',
                             text: 'Reporte enviado con éxito.',
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                $('#reportModal').modal('hide');
-                            }
+                            timer: 2000, // 2000 milisegundos = 2 segundos
+                            timerProgressBar: true,
+                            showConfirmButton: false
+                        }).then(() => {
+                            $('#reportModal').modal('hide');
+                            // Agrega un temporizador para recargar la página después de 2 segundos
+                            setTimeout(function() {
+                                window.location.reload();
+                            },);
                         });
-                    } else {
+
+                    }
+                    else {
                         // Utiliza SweetAlert2 para mostrar un modal de error
                         Swal.fire({
                             icon: 'error',

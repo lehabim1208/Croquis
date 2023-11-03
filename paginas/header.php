@@ -49,6 +49,9 @@
                     <li class="nav-item <?=($currentPage === 'consultas') ? 'active' : ''; ?>">
                         <a class="nav-link" href="consultar_usuario.php">Mis reservas</a>
                     </li>
+                    <li class="nav-item <?=($currentPage === 'reportes') ? 'active' : ''; ?>">
+                        <a class="nav-link" href="reportes_usuario.php">Mis reportes</a>
+                    </li>
                 <?php endif; ?>
             </ul>                   
         </div>
