@@ -113,8 +113,38 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'usuario') {
                                 <?php if ($botonDeshabilitado): ?>
                                     <p style="margin-bottom: 48px;"></p>
                                 <?php endif; ?>
-                                <?php if (!$botonDeshabilitado): ?>
-                                    <button type="button" class="btn btn-warning editar-btn" data-idedicion="<?php echo implode(',', $reserva['idsReservasAgrupadas']); ?>"><i class="fas fa-pencil-alt"></i></button>
+                                <?php if (!$botonDeshabilitado): 
+                                        
+                                        //CÓDIGO PARA BOTÓN EDICIÓN
+                                        //Obtener primer id reserva
+                                        $idReserva = implode(',', $reserva['idsReservasAgrupadas']);
+                                        $idsArray = explode(',', $idReserva);
+                                        $primerIdReserva = $idsArray[0];
+
+                                        
+                                        // Realizar una consulta para obtener el id del espacio
+                                        $sqlEspacio = "SELECT idCatalogo FROM reserva WHERE idReserva = '$primerIdReserva'";
+                                        $resultadoEspacio = $conn->query($sqlEspacio);
+                                    
+                                        if ($resultadoEspacio->num_rows > 0) {
+                                            $filaEspacio = $resultadoEspacio->fetch_assoc();
+                                            $idEspacioEdicion = $filaEspacio['idCatalogo'];
+                                        } else {
+                                            $idEspacioEdicion = "No se encontró el id del espacio";
+                                        }
+
+                                        // Realizar una consulta para obtener el nombre del espacio y id
+                                        $sqlNEspacio = "SELECT nombre FROM catalogo WHERE idCatalogo = '$idEspacioEdicion'";
+                                        $resultadoNEspacio = $conn->query($sqlNEspacio);
+                                    
+                                        if ($resultadoNEspacio->num_rows > 0) {
+                                            $filaNEspacio = $resultadoNEspacio->fetch_assoc();
+                                            $nombreEspacioEdicion = $filaNEspacio['nombre'];
+                                        } else {
+                                            $nombreEspacioEdicion = "No se encontró el id del espacio";
+                                        }
+                                    ?>
+                                    <button type="button" class="btn btn-warning editar-btn" data-idedicion="<?php echo implode(',', $reserva['idsReservasAgrupadas']); ?>" data-idespacioedicion="<?php echo $idEspacioEdicion; ?>" data-nombreespacioedicion="<?php echo $nombreEspacioEdicion; ?>"><i class="fas fa-pencil-alt"></i></button>
                                     <button type="button" class="btn btn-danger eliminar-btn" data-ideliminacion="<?php echo implode(',', $reserva['idsReservasAgrupadas']); ?>"><i class="fas fa-trash-alt"></i></button>
                                     <button style="font-size:12px;" type="button" class="btn btn-info reportar-btn" data-toggle="modal" data-target="#reportModal" data-id="<?php echo implode(',', $reserva['idsReservasAgrupadas']); ?>">Reportar</button>
                                 <?php endif; ?>
@@ -300,22 +330,231 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'usuario') {
                 }
             });
         }
+
             // Agrega un evento click a los botones de editar (puedes personalizar esto según tus necesidades)
             document.querySelectorAll(".editar-btn").forEach(function(botonEditar) {
                 botonEditar.addEventListener("click", function() {
-                    var idReserva = this.getAttribute("data-id");
-
-                    Swal.fire({
-                        title: "Editar Reserva",
-                        html: "Pendiente :)",
-                        icon: "info",
-                        showCancelButton: true,
-                        showConfirmButton: false,
-                        cancelButtonText: "Cancelar",
-                    });
+                    var idReserva = this.getAttribute("data-idedicion");
+                    var idEspacioEdicion = this.getAttribute("data-idespacioedicion");
+                    var nombreEspacioEdicion = this.getAttribute("data-nombreespacioedicion");
+                    console.log(idReserva);
+                    console.log(idEspacioEdicion);
+                    console.log(nombreEspacioEdicion);
+                    mostrarModalNombreFecha(nombreEspacioEdicion, idEspacioEdicion, idReserva);
                 });
             });
         });
+    </script>
+    <script>
+        //EDICIÓN DE RESERVACIÓN
+        function mostrarModalNombreFecha(nombreEspacio, idEspacio, idReserva, fecha = null) {
+
+        //Recuperar el primero id de la reserva:
+        var idsArray = idReserva.split(',');
+        var primerIdReserva = idsArray[0];
+
+        // Calcular la fecha actual
+        const currentDate = new Date();
+        currentDate.toLocaleString("en-US", { timeZone: "America/Mexico_City" });
+
+        // Calcular la fecha dentro de un mes
+        const oneMonthFromNow = new Date(currentDate);
+        oneMonthFromNow.setMonth(currentDate.getMonth() + 1);
+
+        // Convertir las fechas en formato ISO para establecer los atributos min y max
+        const minDate = currentDate.toISOString().split('T')[0];
+        const maxDate = oneMonthFromNow.toISOString().split('T')[0];
+
+        // Obtener el nombre del usuario desde la sesión en PHP
+        const nombreUsuario = "<?php echo $_SESSION['nombre']; ?>";
+        const idUsuario = <?php echo $_SESSION['idUsuario']; ?>;
+
+        // Crear un select deshabilitado con una única opción
+        const usuarioSelect = document.createElement('select');
+        usuarioSelect.id = 'usuario';
+        usuarioSelect.classList.add('swal2-input');
+        usuarioSelect.disabled = true;
+        const usuarioOption = document.createElement('option');
+        usuarioOption.value = idUsuario;
+        usuarioOption.textContent = nombreUsuario;
+        usuarioSelect.appendChild(usuarioOption);
+
+        // Agregar el select al modal
+        Swal.fire({
+        title: `Editando reserva: 0000${primerIdReserva}`,
+        html: `
+        <p class="text-info">Seleccione la nueva fecha</p>
+            <div id="usuarioContainer" style="display: none;">
+                
+            </div>
+            <input id="fecha" class="swal2-input" placeholder="Fecha" type="date" min="${minDate}" max="${maxDate}" value="${fecha}">`,
+        showCancelButton: true,
+        confirmButtonText: 'Siguiente',
+        didRender: () => {
+            const usuarioContainer = document.getElementById('usuarioContainer');
+            usuarioContainer.appendChild(usuarioSelect);
+        },
+        preConfirm: () => {
+            const selectedUserId = idUsuario;
+            const selectedUserName = nombreUsuario; // Obtener el nombre del usuario desde la variable JavaScript
+            const fecha = Swal.getPopup().querySelector('#fecha').value;
+
+            // Llama a la segunda parte para mostrar los horarios
+            mostrarModalHorarios(nombreEspacio, idEspacio, idReserva, selectedUserId, selectedUserName, fecha);
+        }
+        });
+
+        // Obtener el botón "Siguiente"
+        const confirmButton = Swal.getConfirmButton();
+
+        // Obtener el elemento de entrada de fecha
+        const fechaInput = Swal.getPopup().querySelector('#fecha');
+
+        // Deshabilitar el botón de confirmación al principio
+        confirmButton.disabled = true;
+
+        // Agregar un evento de cambio al campo de fecha
+        fechaInput.addEventListener('input', toggleConfirmButton);
+
+        function toggleConfirmButton() {
+        const fechaValue = fechaInput.value;
+
+        // Habilitar el botón si el campo de fecha tiene contenido y la fecha es válida
+        confirmButton.disabled = !(fechaValue && isValidDate(fechaValue));
+        }
+
+        function isValidDate(dateString) {
+        const selectedDate = new Date(dateString);
+        return !isNaN(selectedDate) && selectedDate >= currentDate && selectedDate <= oneMonthFromNow;
+        }
+
+        }
+
+
+
+        function mostrarModalHorarios(nombreEspacio, idEspacio, idReserva, selectedUserId, nombreCliente, fecha) {
+       
+        //Recuperar el primero id de la reserva:
+        var idsArray = idReserva.split(',');
+        var primerIdReserva = idsArray[0];
+
+        // Realizar una petición AJAX para obtener los horarios desde la base de datos
+        $.ajax({
+        url: '../actions/consultarHorarios.php', // Ajusta la ruta al script PHP
+        type: 'POST',
+        data: { idEspacio: idEspacio, fecha: fecha },
+        dataType: 'json',
+        success: function (horarios) {
+        if (horarios.length === 0) {
+            // No hay horarios disponibles, muestra el modal de advertencia
+            Swal.fire({
+                title: 'No disponible',
+                text: 'No hay horarios para esta fecha. Consulte otro día',
+                icon: 'warning',
+                confirmButtonText: 'Cambiar fecha' // Cambiar el texto del botón de confirmación
+            }).then(() => {
+                // Cuando el usuario haga clic en "Cambiar fecha", llama a mostrarModalNombreFecha
+                mostrarModalNombreFecha(nombreEspacio, idEspacio, selectedUserId, fecha);
+            });
+        } else {
+            // Generar checkboxes con estilos de Bootstrap en un diseño de 3x3
+            let checkboxesHTML = '<div class="row">';
+            horarios.forEach((horario, index) => {
+                if (index % 3 === 0) {
+                    checkboxesHTML += '</div><div class="row">';
+                }
+                checkboxesHTML += `
+                    <div class="col-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" data-horario="${horario}" id="checkbox-${index}">
+                            <label class="form-check-label" for="checkbox-${index}">${horario}</label>
+                        </div>
+                    </div>`;
+            });
+            checkboxesHTML += '</div';
+
+            Swal.fire({
+                title: `Editando reserva: 0000${primerIdReserva}`,
+                html: `
+                    <p class="text-info">Seleccione el o los nuevos horarios</p>
+                    <p>Nueva fecha: ${fecha}</p>
+                    <br>
+                    <div class="swal2-checkboxes checkcheck">
+                        ${checkboxesHTML}
+                    </div>`,
+                showDenyButton: true,
+                denyButtonText: 'Regresar',
+                customClass: {
+                    confirmButton: 'swalBtnColor',
+                    denyButton: 'swalBtnColor2',
+                    cancelButton: 'swalBtnColor3'
+                },
+                showCancelButton: true,
+                confirmButtonText: 'Editar',
+                preConfirm: () => {
+                    const horariosSeleccionados = [];
+                    const checkboxes = document.querySelectorAll('.swal2-checkboxes input[type="checkbox"]');
+
+                    checkboxes.forEach(checkbox => {
+                        if (checkbox.checked) {
+                            // Accede al atributo 'data-horario' en lugar del valor del checkbox
+                            horariosSeleccionados.push(checkbox.getAttribute('data-horario'));
+                        }
+                    });
+
+                    // Crear un objeto que contenga los datos que deseas enviar al servidor
+                    const data = {
+                        horariosSeleccionados: horariosSeleccionados,
+                        fecha: fecha,
+                        selectedUserId: selectedUserId,
+                        idEspacio: idEspacio,
+                        idReserva: idReserva,
+                    };
+
+                    // Realizar una solicitud POST al archivo PHP
+                    fetch('../actions/editarReserva.php', {
+                        method: 'POST',
+                        body: JSON.stringify(data)
+                    })
+                        .then(response => {
+                            if (response.ok) {
+                                Swal.fire({
+                                    title: 'Edición exitosa!',
+                                    icon: 'success',
+                                    text: 'Se le ha asignado un nuevo folio a esta edición',
+                                    timer: 2000, // 2 segundos
+                                    showConfirmButton: false, // No mostrar el botón de confirmación
+                                }).then(function(result) {
+                                    // Esta función se ejecutará cuando se cierre la notificación (automáticamente después de 2 segundos).
+                                    if (result.dismiss === Swal.DismissReason.timer) {
+                                        location.reload();
+                                    }
+                                });
+                            } else {
+                                // La solicitud no se completó con éxito
+                                Swal.fire({
+                                    title: 'Error!',
+                                    icon: 'error',
+                                    text: 'Ocurrió un error al editar. Vuelve a intentarlo'
+                                });
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error en la solicitud: ', error);
+                        });
+                }
+            }).then((result) => {
+                if (result.isDenied) {
+                    mostrarModalNombreFecha(nombreEspacio, idEspacio, idReserva, selectedUserId, fecha);
+                }
+            });
+        } 
+        },
+        error: function () {
+        Swal.fire('No disponible', 'Por el momento no hay horarios disponibles para este espacio. Vuelva más tarde', 'warning');
+        }
+        });
+        }
     </script>
 
 <script>

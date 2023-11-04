@@ -117,7 +117,7 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'administrador') {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="../scripts/sweetAlert.js"></script>
+    <!--<script src="../scripts/sweetAlert.js"></script>-->
 
     <script>
 // Función para mostrar el modal de reserva con horarios desde la base de datos

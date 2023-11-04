@@ -27,7 +27,7 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'usuario') {
                 <div class="row" id="report-cards">
                     <?php
                     // Realiza la consulta a la base de datos
-                    $sql = "SELECT idReporte, asunto, descripcion, fecha_hora, idReserva, idCliente, mensaje_admin, estado FROM reportes";
+                    $sql = "SELECT idReporte, asunto, descripcion, fecha_hora, idReserva, idCliente, mensaje_admin, estado FROM reportes WHERE idCliente = " . $_SESSION['idUsuario'];
                     $resultado = $conn->query($sql);
 
                     if ($resultado->num_rows > 0) {
