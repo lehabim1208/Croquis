@@ -28,104 +28,108 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'usuario') {
             <br>
             <div class="row">
                 <!-- Tarjetas Bootstrap para mostrar las reservaciones -->
-        <?php
-        $usuarioSelect = $_SESSION['idUsuario'];
-        $sql = "SELECT r.idReserva, r.idCatalogo, r.horaMax, r.horaMin, r.fecha, r.id_Cliente, c.nombre AS nombreEspacio, u.nombre AS nombreUsuario
-                FROM reserva r
-                JOIN catalogo c ON r.idCatalogo = c.idCatalogo
-                JOIN usuario u ON r.id_Cliente = u.idUsuario
-                WHERE r.id_cliente = '$usuarioSelect'
-                ORDER BY r.fecha, r.idCatalogo, r.horaMin";
+                <?php
+            $usuarioSelect = $_SESSION['idUsuario'];
+            $sql = "SELECT r.idReserva, r.idCatalogo, r.horaMax, r.horaMin, r.fecha, r.id_Cliente, c.nombre AS nombreEspacio, u.nombre AS nombreUsuario
+                    FROM reserva r
+                    JOIN catalogo c ON r.idCatalogo = c.idCatalogo
+                    JOIN usuario u ON r.id_Cliente = u.idUsuario
+                    WHERE r.id_cliente = '$usuarioSelect'
+                    ORDER BY r.fecha, r.idCatalogo, r.horaMin";
 
-        $resultado = $conn->query($sql);
+            $resultado = $conn->query($sql);
 
-        if ($resultado->num_rows > 0) {
-            $reservas_agrupadas = array();
+            if ($resultado->num_rows > 0) {
+                $reservas_agrupadas = array();
 
-            while ($fila = $resultado->fetch_assoc()) {
-                $idReserva = $fila['idReserva'];
-                $idCatalogo = $fila['idCatalogo'];
-                $horaMax = $fila['horaMax'];
-                $horaMin = $fila['horaMin'];
-                $fecha = $fila['fecha'];
-                $idCliente = $fila['id_Cliente'];
-                $nombreEspacio = $fila['nombreEspacio'];
-                $nombreUsuario = $fila['nombreUsuario'];
+                while ($fila = $resultado->fetch_assoc()) {
+                    $idReserva = $fila['idReserva'];
+                    $idCatalogo = $fila['idCatalogo'];
+                    $horaMax = $fila['horaMax'];
+                    $horaMin = $fila['horaMin'];
+                    $fecha = $fila['fecha'];
+                    $idCliente = $fila['id_Cliente'];
+                    $nombreEspacio = $fila['nombreEspacio'];
+                    $nombreUsuario = $fila['nombreUsuario'];
+                    $idsReservasAgrupadas = array();
 
-                if (!count($reservas_agrupadas) ||
-                    $reservas_agrupadas[count($reservas_agrupadas) - 1]['fecha'] !== $fecha ||
-                    $reservas_agrupadas[count($reservas_agrupadas) - 1]['idCatalogo'] !== $idCatalogo ||
-                    $reservas_agrupadas[count($reservas_agrupadas) - 1]['idCliente'] !== $idCliente ||
-                    $reservas_agrupadas[count($reservas_agrupadas) - 1]['horaMax'] !== $horaMin
-                ) {
-                    // Agregar nueva reserva agrupada
-                    $reservas_agrupadas[] = array(
-                        'idReserva' => $idReserva,
-                        'idCatalogo' => $idCatalogo,
-                        'horaMin' => $horaMin,
-                        'horaMax' => $horaMax,
-                        'fecha' => $fecha,
-                        'idCliente' => $idCliente,
-                        'nombreEspacio' => $nombreEspacio,
-                        'nombreUsuario' => $nombreUsuario,
-                    );
-                } else {
-                    // Actualizar la hora máxima de la última reserva agrupada
-                    $reservas_agrupadas[count($reservas_agrupadas) - 1]['horaMax'] = $horaMax;
+                    if (!count($reservas_agrupadas) ||
+                        $reservas_agrupadas[count($reservas_agrupadas) - 1]['fecha'] !== $fecha ||
+                        $reservas_agrupadas[count($reservas_agrupadas) - 1]['idCatalogo'] !== $idCatalogo ||
+                        $reservas_agrupadas[count($reservas_agrupadas) - 1]['idCliente'] !== $idCliente ||
+                        $reservas_agrupadas[count($reservas_agrupadas) - 1]['horaMax'] !== $horaMin
+                    ) {
+                        // Agregar nueva reserva agrupada
+                        $reservas_agrupadas[] = array(
+                            'idReserva' => $idReserva,
+                            'idCatalogo' => $idCatalogo,
+                            'horaMin' => $horaMin,
+                            'horaMax' => $horaMax,
+                            'fecha' => $fecha,
+                            'idCliente' => $idCliente,
+                            'nombreEspacio' => $nombreEspacio,
+                            'nombreUsuario' => $nombreUsuario,
+                            'idsReservasAgrupadas' => array($idReserva), // Inicializar con el primer ID
+                        );
+                    } else {
+                        // Actualizar la hora máxima de la última reserva agrupada
+                        $reservas_agrupadas[count($reservas_agrupadas) - 1]['horaMax'] = $horaMax;
+                        // Agregar el ID de la reserva agrupada
+                        $reservas_agrupadas[count($reservas_agrupadas) - 1]['idsReservasAgrupadas'][] = $idReserva;
+                    }
                 }
-            }
 
-            function compararFechas($a, $b) {
-                // Convierte las fechas en formato 'Y-m-d' a timestamps para comparar
-                $fechaTimestampA = strtotime($a['fecha']);
-                $fechaTimestampB = strtotime($b['fecha']);
-            
-                // Compara las fechas en orden descendente
-                if ($fechaTimestampA == $fechaTimestampB) {
-                    return 0;
+                function compararFechas($a, $b) {
+                    // Convierte las fechas en formato 'Y-m-d' a timestamps para comparar
+                    $fechaTimestampA = strtotime($a['fecha']);
+                    $fechaTimestampB = strtotime($b['fecha']);
+
+                    // Compara las fechas en orden descendente
+                    if ($fechaTimestampA == $fechaTimestampB) {
+                        return 0;
+                    }
+                    return ($fechaTimestampA > $fechaTimestampB) ? -1 : 1;
                 }
-                return ($fechaTimestampA > $fechaTimestampB) ? -1 : 1;
-            }
-            
-            // Ordenar el arreglo de reservas por fecha en orden descendente
-            usort($reservas_agrupadas, 'compararFechas');
-            
-            // Obtener la fecha actual
-            $fechaActual = date('Y-m-d');
-            
-            foreach ($reservas_agrupadas as $reserva) {
-                $fechaReserva = $reserva['fecha'];
-            
-                $botonDeshabilitado = $fechaReserva < $fechaActual;
-            
-                ?>
-                <div class="col-lg-4">
-                    <div class="card" style="display: block; margin-bottom:30px;">
-                        <div class="card-body" style="border-width: 1px; border-style: solid; border-color: #000;">
-                            <h5 class="card-title">Folio: 0000<?php echo $reserva['idReserva']; ?></h5>
-                            <p class="card-text" data-tipo="nombreEspacio">Espacio: <?php echo $reserva['nombreEspacio']; ?></p>
-                            <p class "card-text">Hora Inicio: <?php echo $reserva['horaMin']; ?> hrs.</p>
-                            <p class="card-text">Hora Final: <?php echo $reserva['horaMax']; ?> hrs.</p>
-                            <p class="card-text" data-tipo="fecha">Fecha: <?php echo $reserva['fecha']; ?></p>
-                            <?php if ($botonDeshabilitado): ?>
-                                <p style="margin-bottom: 48px;"></p>
-                            <?php endif; ?>
-                            <?php if (!$botonDeshabilitado): ?>
-                                <button type="button" class="btn btn-warning editar-btn" data-id="<?php echo $reserva['idReserva']; ?>"><i class="fas fa-pencil-alt"></i></button>
-                                <button type="button" class="btn btn-danger eliminar-btn" data-id="<?php echo $reserva['idReserva']; ?>"><i class="fas fa-trash-alt"></i></button>
-                                <button style="font-size:12px;" type="button" class="btn btn-info reportar-btn" data-toggle="modal" data-target="#reportModal" data-id="<?php echo $reserva['idReserva']; ?>">Reportar</button>
-                            <?php endif; ?>
+
+                // Ordenar el arreglo de reservas por fecha en orden descendente
+                usort($reservas_agrupadas, 'compararFechas');
+
+                // Obtener la fecha actual
+                $fechaActual = date('Y-m-d');
+                
+                // Mostrar las reservas agrupadas en las tarjetas
+                foreach ($reservas_agrupadas as $reserva) {
+                    $fechaReserva = $reserva['fecha'];
+                    $botonDeshabilitado = $fechaReserva < $fechaActual;
+                    ?>
+                    <div class="col-lg-4">
+                        <div class="card" data-ids-reservas="<?php echo implode(',', $idsReservasAgrupadas); ?>" style="display: block; margin-bottom:30px;">
+                            <div class="card-body" style="border-width: 1px; border-style: solid; border-color: #000;">
+                                <h5 class="card-title">Folio: 0000<?php echo $reserva['idReserva'] ?></h5>
+                                <p class="card-text" data-tipo="nombreEspacio">Espacio: <?php echo $reserva['nombreEspacio']; ?></p>
+                                <p class "card-text">Hora Inicio: <?php echo $reserva['horaMin']; ?> hrs.</p>
+                                <p class="card-text">Hora Final: <?php echo $reserva['horaMax']; ?> hrs.</p>
+                                <p class="card-text" data-tipo="fecha">Fecha: <?php echo $reserva['fecha']; ?></p>
+                                <?php if ($botonDeshabilitado): ?>
+                                    <p style="margin-bottom: 48px;"></p>
+                                <?php endif; ?>
+                                <?php if (!$botonDeshabilitado): ?>
+                                    <button type="button" class="btn btn-warning editar-btn" data-idedicion="<?php echo implode(',', $reserva['idsReservasAgrupadas']); ?>"><i class="fas fa-pencil-alt"></i></button>
+                                    <button type="button" class="btn btn-danger eliminar-btn" data-ideliminacion="<?php echo implode(',', $reserva['idsReservasAgrupadas']); ?>"><i class="fas fa-trash-alt"></i></button>
+                                    <button style="font-size:12px;" type="button" class="btn btn-info reportar-btn" data-toggle="modal" data-target="#reportModal" data-id="<?php echo implode(',', $reserva['idsReservasAgrupadas']); ?>">Reportar</button>
+                                <?php endif; ?>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <?php
-            }
+                    <?php
+                }
 
-            echo '</div>
+                echo '</div>
+                    </div>
                 </div>
-            </div>
-        </div>';
-        } else {
+            </div>';
+            } else
+            {
             // No se encontraron registros
             echo "Aún no tienes ninguna reservación";
         }
@@ -169,6 +173,7 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'usuario') {
 
 
     <script>
+        //REPORTE
         // JavaScript para obtener el idReserva del botón y establecerlo en el formulario
         $('.reportar-btn').click(function() {
             var idReserva = $(this).data('id');
@@ -233,17 +238,88 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'usuario') {
 
 
     <script>
-        // Agrega un evento clic a los botones de edición y eliminación
-        document.querySelectorAll('.editar-btn, .eliminar-btn').forEach(function(button) {
-        button.addEventListener('click', function(event) {
-            const idReserva = event.target.getAttribute('data-id');
+        //ELIMINACIÓN Y EDICIÓN DE RESERVACIONES
+        document.addEventListener("DOMContentLoaded", function() {
+            var filtroSelect = document.getElementById("filtro");
+            var tarjetas = document.querySelectorAll(".col-lg-4");
             
-            // Ahora tienes el ID de la reserva en la variable idReserva
-            console.log('ID de la reserva:', idReserva);
+            document.querySelectorAll('.eliminar-btn').forEach(function(button) {
+            button.addEventListener('click', function(event) {
+                const idReserva = event.currentTarget.getAttribute('data-ideliminacion');
+                eliminarReserva(idReserva);
+                console.log(idReserva);
+            });
         });
+
+        // Resto de tu código aquí...
+
+        // Función para eliminar una reserva usando AJAX
+        function eliminarReserva(idReserva) {
+            Swal.fire({
+                title: "¿Estás seguro?",
+                text: "Esta acción eliminará la reserva",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Sí, eliminar",
+                cancelButtonText: "Cancelar",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Realiza la solicitud AJAX para eliminar la reserva
+                    var data = { idReserva: idReserva }; // Pasa los IDs como una cadena
+                    fetch("../actions/eliminarReserva.php", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(data),
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === "success") {
+                            Swal.fire({
+                                title: "Reserva eliminada",
+                                text: data.message,
+                                icon: "success",
+                                timer: 2000, // 2 segundos
+                                showConfirmButton: false
+                            }).then(function() {
+                                // Realiza una recarga de la página después de 2 segundos
+                                setTimeout(function() {
+                                    location.reload();
+                                },);
+                            });
+                        } else {
+                            Swal.fire("Error", data.message, "error");
+                        }
+                    })
+                    .catch(error => {
+                        Swal.fire("Error", "Ocurrió un error al eliminar la reserva", "error");
+                    });
+                }
+            });
+        }
+            // Agrega un evento click a los botones de editar (puedes personalizar esto según tus necesidades)
+            document.querySelectorAll(".editar-btn").forEach(function(botonEditar) {
+                botonEditar.addEventListener("click", function() {
+                    var idReserva = this.getAttribute("data-id");
+
+                    Swal.fire({
+                        title: "Editar Reserva",
+                        html: "Pendiente :)",
+                        icon: "info",
+                        showCancelButton: true,
+                        showConfirmButton: false,
+                        cancelButtonText: "Cancelar",
+                    });
+                });
+            });
         });
     </script>
-    <script>
+
+<script>
+    //VISUALIZACIÓN DE CARDS
         document.addEventListener("DOMContentLoaded", function() {
             var filtroSelect = document.getElementById("filtro");
             var tarjetas = document.querySelectorAll(".col-lg-4");
@@ -287,109 +363,26 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'usuario') {
             });
         });
     </script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var filtroSelect = document.getElementById("filtro");
-            var tarjetas = document.querySelectorAll(".col-lg-4");
-            
-           // Función para eliminar una reserva usando AJAX
-    function eliminarReserva(idReserva) {
-        Swal.fire({
-            title: "¿Estás seguro?",
-            text: "Esta acción eliminará la reserva",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Sí, eliminar",
-            cancelButtonText: "Cancelar",
-        }).then((result) => {
-            if (result.isConfirmed) {
-                // Realiza la solicitud AJAX para eliminar la reserva
-                var data = { idReserva: idReserva };
-                fetch("../actions/eliminarReserva.php", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(data),
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.status === "success") {
-                        Swal.fire({
-                            title: "Reserva eliminada",
-                            text: data.message,
-                            icon: "success",
-                            timer: 2000, // 2 segundos
-                            showConfirmButton: false
-                        }).then(function() {
-                            // Oculta la tarjeta correspondiente después de 2 segundos
-                            var tarjetaAEliminar = document.querySelector(".eliminar-btn[data-id='" + idReserva + "']").closest(".col-lg-4");
-                            tarjetaAEliminar.style.display = "none";
-                            
-                            // Realiza una recarga de la página después de 2 segundos
-                            setTimeout(function() {
-                                location.reload();
-                            },);
-                        });
-                    } else {
-                        Swal.fire("Error", data.message, "error");
-                    }
-                })
-                .catch(error => {
-                    Swal.fire("Error", "Ocurrió un error al eliminar la reserva", "error");
-                });
-            }
-        });
-    }
-
-    // Agrega un evento click a los botones de eliminar
-    document.querySelectorAll(".eliminar-btn").forEach(function(botonEliminar) {
-        botonEliminar.addEventListener("click", function() {
-            var idReserva = this.getAttribute("data-id");
-            eliminarReserva(idReserva);
-        });
-    });
-
-            // Agrega un evento click a los botones de editar (puedes personalizar esto según tus necesidades)
-            document.querySelectorAll(".editar-btn").forEach(function(botonEditar) {
-                botonEditar.addEventListener("click", function() {
-                    var idReserva = this.getAttribute("data-id");
-                    // Puedes abrir un modal o redirigir a una página de edición aquí
-                    // Por ejemplo, abre un SweetAlert2 personalizado para editar
-                    Swal.fire({
-                        title: "Editar Reserva",
-                        html: "Pendiente :)",
-                        icon: "info",
-                        showCancelButton: true,
-                        showConfirmButton: false,
-                        cancelButtonText: "Cancelar",
-                    });
-                });
-            });
-        });
-    </script>
-
 
     <script>
+    //AJUSTAR FOOTER
     function ajustarPosicionFooter() {
-    const footer = document.getElementById("myFooter");
-    const container = document.getElementById("contenido");
-    
-    if (container.offsetHeight >= 500) {
-        footer.style.position = "relative";
-    } else {
-        footer.style.position = "absolute";
+        const footer = document.getElementById("myFooter");
+        const container = document.getElementById("contenido");
+        
+        if (container.offsetHeight >= 500) {
+            footer.style.position = "relative";
+        } else {
+            footer.style.position = "absolute";
+        }
     }
-}
 
-// Ajusta la posición del footer al cargar la página
-ajustarPosicionFooter();
+    // Ajusta la posición del footer al cargar la página
+    ajustarPosicionFooter();
 
-// Escucha el evento resize de la ventana para ajustar en caso de cambios en la altura
-window.addEventListener("resize", ajustarPosicionFooter);
-
+    // Escucha el evento resize de la ventana para ajustar en caso de cambios en la altura
+    window.addEventListener("resize", ajustarPosicionFooter);
 </script>
+
 </body>
 </html>
