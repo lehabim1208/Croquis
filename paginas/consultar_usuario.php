@@ -208,7 +208,11 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'usuario') {
         $('.reportar-btn').click(function() {
             var idReserva = $(this).data('id');
             $('#idReserva').val(idReserva);
-            $('#idReservaDisplay').text(idReserva);
+
+            //Recuperar el primero id de la reserva:
+            var idsArray = idReserva.split(',');
+            var primerIdReserva = idsArray[0];
+            $('#idReservaDisplay').text(primerIdReserva);
         });
 
         // JavaScript para enviar el formulario a través de AJAX como solicitud JSON

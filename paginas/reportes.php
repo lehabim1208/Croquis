@@ -175,7 +175,7 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'administrador') {
                     </div>
                     <div class="form-group">
                         <label for="mensaje">Mensaje:</label>
-                        <textarea class="form-control" id="mensaje" name="mensaje" rows="5"></textarea>
+                        <textarea class="form-control" id="mensaje" name="mensaje" rows="5"><?php echo $mensaje_admin; ?></textarea>
                     </div>
                 </form>
             </div>
@@ -186,6 +186,8 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'administrador') {
         </div>
     </div>
 </div>
+
+
 
 
 
@@ -283,33 +285,90 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'administrador') {
     </script>
     
     <script>
-        //ACCIONES
-        $(document).ready(function() {
+        //SCRIPT ACCIONES
+    $(document).ready(function() {
         $('.acciones-reporte').click(function() {
             var idReporte = $(this).data('idreporte'); // Obtener el ID del reporte del botón
-            console.log(idReporte);
-            // Asignar el ID del reporte al elemento <span> en el modal
-            $('#reporteIdAcciones').text(idReporte);
 
-            // Asignar el ID del reporte al campo oculto del formulario en el modal
-            $('#idReporteAcciones').val(idReporte);
+                // Asignar el ID del reporte al elemento <span> en el modal
+                $('#reporteIdAcciones').text(idReporte);
+                // Asignar el ID del reporte al campo oculto del formulario en el modal
+                $('#idReporteAcciones').val(idReporte);
 
-            // Abrir el modal de acciones
-            $('#accionesModal').modal('show');
+                //Recuperar valores para mensaje y estado
+                $(document).ready(function() {
+                $('.acciones-reporte').click(function() {
+                    var idReporte = $(this).data('idreporte'); // Obtener el ID del reporte del botón
+
+                    // Realizar una solicitud AJAX para recuperar los valores desde PHP
+                    $.ajax({
+                        url: '../actions/recuperarDatosReserva.php',
+                        method: 'POST',
+                        data: { idReporte: idReporte },
+                        success: function(response) {
+                            var data = JSON.parse(response); // Convertir la respuesta JSON en un objeto
+
+                            // Asignar los valores recuperados a los campos del formulario
+                            $('#idReporteAcciones').val(idReporte);
+                            $('#estado').val(data.estado); // Asignar el estado recuperado
+                            $('#mensaje').val(data.mensaje_admin); // Asignar el mensaje recuperado
+
+                            // Abrir el modal de acciones
+                            $('#accionesModal').modal('show');
+                        },
+                        error: function(xhr, status, error) {
+                            console.error(error);
+                        }
+                    });
+                });
+            });
         });
 
         $('#guardarAcciones').click(function() {
-            // Aquí puedes recopilar los datos del formulario y realizar acciones necesarias
-            var formData = {
-                idReporte: $('#idReporteAcciones').val(),
-                estado: $('#estado').val(),
-                mensaje: $('#mensaje').val()
-            };
+            Swal.fire({
+                title: 'Confirmación',
+                text: '¿Estás seguro de realizar esta acción?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Sí',
+                cancelButtonText: 'No'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                        // Recopila los datos del formulario
+                var formData = {
+                    idReporte: $('#idReporteAcciones').val(),
+                    estado: $('#estado').val(),
+                    mensaje: $('#mensaje').val()
+                };
 
-            // Realiza una solicitud AJAX o procesamiento adicional si es necesario
-
-            // Cerrar el modal de acciones
-            $('#accionesModal').modal('hide');
+                // Realiza una solicitud AJAX
+                $.ajax({
+                    type: 'POST',
+                    url: '../actions/accionesReporte.php', // Ruta al archivo PHP
+                    data: formData,
+                    dataType: 'json',
+                    success: function(response) {
+                        // Maneja la respuesta del servidor (puedes mostrar una alerta de éxito aquí)
+                        Swal.fire({
+                        title: 'Éxito',
+                        text: 'Acción completada con éxito',
+                        icon: 'success',
+                        timer: 2000, // Tiempo en milisegundos (en este caso, 2 segundos)
+                        showConfirmButton: false // No mostrar el botón de confirmación
+                    }).then(function() {
+                        // Recargar la página
+                        location.reload();
+                    });
+                        // Cierra el modal de acciones
+                        $('#accionesModal').modal('hide');
+                    },
+                    error: function(error) {
+                        // Maneja los errores (puedes mostrar una alerta de error aquí)
+                        Swal.fire('Error', 'Ha ocurrido un error', 'error');
+                    }
+                });
+                }
+            });
         });
     });
     </script>
