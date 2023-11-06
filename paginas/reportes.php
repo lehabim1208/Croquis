@@ -241,45 +241,44 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'administrador') {
                 idCliente: idCliente
             };
 
-            // Realiza la solicitud AJAX para enviar el correo
             $.ajax({
-                type: 'POST',
-                url: '../actions/enviarCorreo.php',
-                data: formData,
-                dataType: 'json',
-                success: function(response) {
-                    if (response.success) {
-                        // Cerrar el modal de correo
-                        $('#correoModal').modal('hide');
-                        // Mostrar SweetAlert de éxito
-                        Swal.fire({
-                            title: 'Éxito',
-                            text: 'El correo ha sido enviado con éxito.',
-                            icon: 'success',
-                            timer: 2000, // El tiempo en milisegundos que deseas mostrar la alerta (en este caso, 3 segundos)
-                            showConfirmButton: false // Ocultar el botón "Aceptar" para que se cierre automáticamente
-                        }).then(function() {
-                            // Después de que se cierre la alerta, realiza una recarga de la página
-                            location.reload();
-                        });
-                    } else {
-                        // Mostrar SweetAlert de error
-                        Swal.fire({
-                            title: 'Error',
-                            text: 'Hubo un problema al enviar el correo.',
-                            icon: 'error'
-                        });
-                    }
-                },
-                error: function() {
-                    // Mostrar SweetAlert de error en caso de error
-                    Swal.fire({
-                        title: 'Error',
-                        text: 'Hubo un problema al enviar el correo.',
-                        icon: 'error'
-                    });
-                }
+    type: 'POST',
+    url: '../actions/enviarCorreo.php',
+    data: formData,
+    dataType: 'json',
+    success: function(response) {
+        if (response.success) {
+            // Cerrar el modal de correo
+            $('#correoModal').modal('hide');
+            // Mostrar SweetAlert de éxito
+            Swal.fire({
+                title: 'Éxito',
+                text: response.message,
+                icon: 'success',
+                timer: 2000, // El tiempo en milisegundos que deseas mostrar la alerta (en este caso, 2 segundos)
+                showConfirmButton: false // Ocultar el botón "Aceptar" para que se cierre automáticamente
+            }).then(function() {
+                // Después de que se cierre la alerta, realiza una recarga de la página
+                location.reload();
             });
+        } else {
+            // Mostrar SweetAlert de error
+            Swal.fire({
+                title: 'Error',
+                text: response.message,
+                icon: 'error'
+            });
+        }
+    },
+    error: function() {
+        // Mostrar SweetAlert de error en caso de error
+        Swal.fire({
+            title: 'Error',
+            text: 'Hubo un problema al enviar el correo.',
+            icon: 'error'
+        });
+    }
+});
         });
     });
     </script>
