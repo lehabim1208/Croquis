@@ -38,14 +38,54 @@ try {
     // Content
     $mail->isHTML(true); // Establece el formato del correo como HTML
     $mail->Subject = $asuntoAdmin; // Asunto del correo
-    $mail->Body = "ID del Reporte: $idReporte <br>" .
-        "Asunto del Usuario: $asuntoUsuario <br>" .
-        "Descripción del Usuario: $descripcionUsuario <br>" .
-        "Estado: $estado <br>" .
-        "Fecha y Hora: $fechaHora <br>" .
-        "ID de Reserva: $idReserva <br>" .
-        "ID de Cliente: $idCliente <br>" .
-        "Mensaje del Administrador:<br>$mensajeAdmin";
+    $mail->Body = '
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f5f5f5;
+                margin: 0;
+                padding: 20px;
+            }
+            .container {
+                background-color: #5b5d5f;
+                padding: 20px;
+                border-radius: 5px;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            }
+            h2 {
+                color: #333;
+            }
+            .info {
+                margin-top: 20px;
+            }
+            .info p {
+                margin: 0;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h2>Detalles del Reporte:</h2>
+            <div class="info">
+                <p><strong>ID del Reporte:</strong> ' . $idReporte . '</p>
+                <p><strong>Asunto del Usuario:</strong> ' . $asuntoUsuario . '</p>
+                <p><strong>Descripción del Usuario:</strong> ' . $descripcionUsuario . '</p>
+                <p><strong>Estado:</strong> ' . $estado . '</p>
+                <p><strong>Fecha y Hora:</strong> ' . $fechaHora . '</p>
+                <p><strong>ID de Reserva:</strong> ' . $idReserva . '</p>
+                <p><strong>ID de Cliente:</strong> ' . $idCliente . '</p>
+                <span>________________________</span>
+                <br><br>
+                <h2>Mensaje del administrador:</h2>
+                <p><strong>Mensaje:</strong><br>' . $mensajeAdmin . '</p>
+            </div>
+        </div>
+    </body>
+    </html>
+    ';
 
     $mail->CharSet = 'UTF-8';
 
