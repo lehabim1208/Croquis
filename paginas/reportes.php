@@ -242,43 +242,43 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'administrador') {
             };
 
             $.ajax({
-    type: 'POST',
-    url: '../actions/enviarCorreo.php',
-    data: formData,
-    dataType: 'json',
-    success: function(response) {
-        if (response.success) {
-            // Cerrar el modal de correo
-            $('#correoModal').modal('hide');
-            // Mostrar SweetAlert de éxito
-            Swal.fire({
-                title: 'Éxito',
-                text: response.message,
-                icon: 'success',
-                timer: 2000, // El tiempo en milisegundos que deseas mostrar la alerta (en este caso, 2 segundos)
-                showConfirmButton: false // Ocultar el botón "Aceptar" para que se cierre automáticamente
-            }).then(function() {
-                // Después de que se cierre la alerta, realiza una recarga de la página
-                location.reload();
+                type: 'POST',
+                url: '../actions/enviarCorreo.php',
+                data: formData,
+                dataType: 'json',
+                success: function(response) {
+                    if (response.success) {
+                        // Cerrar el modal de correo
+                        $('#correoModal').modal('hide');
+                        // Mostrar SweetAlert de éxito
+                        Swal.fire({
+                            title: 'Éxito',
+                            text: response.message,
+                            icon: 'success',
+                            timer: 2000, // El tiempo en milisegundos que deseas mostrar la alerta (en este caso, 2 segundos)
+                            showConfirmButton: false // Ocultar el botón "Aceptar" para que se cierre automáticamente
+                        }).then(function() {
+                            // Después de que se cierre la alerta, realiza una recarga de la página
+                            location.reload();
+                        });
+                    } else {
+                        // Mostrar SweetAlert de error
+                        Swal.fire({
+                            title: 'Error',
+                            text: response.message,
+                            icon: 'error'
+                        });
+                    }
+                },
+                error: function() {
+                    // Mostrar SweetAlert de error en caso de error
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'Hubo un problema al enviar el correo.',
+                        icon: 'error'
+                    });
+                }
             });
-        } else {
-            // Mostrar SweetAlert de error
-            Swal.fire({
-                title: 'Error',
-                text: response.message,
-                icon: 'error'
-            });
-        }
-    },
-    error: function() {
-        // Mostrar SweetAlert de error en caso de error
-        Swal.fire({
-            title: 'Error',
-            text: 'Hubo un problema al enviar el correo.',
-            icon: 'error'
-        });
-    }
-});
         });
     });
     </script>
@@ -374,27 +374,22 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'administrador') {
 
     <script>
         //REPORTE SEMANAL
-        $(document).ready(function() {
-    $('#reporteSemanal').click(function() {
-        // Muestra un modal de SweetAlert2 de confirmación
-        Swal.fire({
-            title: 'Generar Reporte Semanal',
-            text: 'Estás a punto de generar un PDF con los reportes de la semana.',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Generar'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                // Aquí puedes agregar la lógica para generar el reporte en PDF
-                // Una vez que se genere el reporte, puedes mostrar una alerta de éxito
-                Swal.fire('Éxito', 'El reporte se ha generado correctamente.', 'success');
-            }
+        // Agrega un evento click al botón para mostrar el modal de SweetAlert2
+        document.getElementById('reporteSemanal').addEventListener('click', function () {
+            Swal.fire({
+                title: 'Generar Excel',
+                text: '¿Deseas generar y descargar el Excel?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Generar Excel',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Cuando se confirma, abre el archivo en una nueva pestaña
+                    window.open('../actions/generarPDF.php', '_blank');
+                }
+            });
         });
-    });
-});
-
     </script>
 
     <script>
