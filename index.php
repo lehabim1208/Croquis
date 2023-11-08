@@ -41,10 +41,10 @@ if (isset($_SESSION['idUsuario'])) {
           <!-- Cabecera -->
           <h1 class="active"> Bienvenido </h1>
           <h3>Reservaciones UV</h3>
-      
-          <!-- Icono -->
+
+         <!-- Icono -->
           <div class="fadeIn first">
-              <img src="https://i.ibb.co/mCwfvsv/calendar-svgrepo-com.png" id="icon" alt="User Icon" style="width: 80px; padding-bottom:10px;"/>
+              <img src="img/calendario.svg" id="icon" alt="User Icon" style="width: 100px; padding-bottom:10px;"/>
           </div>
 
             <a href="login.html"><input type="submit" class="fadeIn fourth" value="Iniciar sesión" style="cursor: pointer;"></a>

@@ -16,7 +16,8 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'administrador') {
 
     <div class="jumbotron">
         <h1 class="display-4">¡Bienvenido <?php echo $_SESSION['nombre']; ?>!</h1>
-        <p class="lead">Hoy es un buen día para chambear :)</p>
+        <p style="display: inline;" class="lead">Hoy es un buen día para chambear :)</p>
+        <img src="../img/calendario.svg" id="icon" alt="User Icon" style="width: 50px; padding-bottom:10px; display: inline;"/>
         <hr class="my-4">
         <p>Consulte en el botón azul la disponibilidad de espacios</p>
         <a class="btn btn-primary btn-lg" href="home.php" role="button">Disponibilidad!</a>

@@ -377,16 +377,21 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'administrador') {
         // Agrega un evento click al botón para mostrar el modal de SweetAlert2
         document.getElementById('reporteSemanal').addEventListener('click', function () {
             Swal.fire({
-                title: 'Generar Excel',
-                text: '¿Deseas generar y descargar el Excel?',
+                title: '¿Generar PDF o Excel?',
+                text: 'Elige el formato que deseas generar:',
                 icon: 'question',
                 showCancelButton: true,
-                confirmButtonText: 'Generar Excel',
-                cancelButtonText: 'Cancelar'
+                confirmButtonText: 'Generar PDF',
+                confirmButtonColor: '#FF5733',  // Color rojo
+                cancelButtonText: 'Generar Excel',
+                cancelButtonColor: '#5DB75D',  // Color verde
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // Cuando se confirma, abre el archivo en una nueva pestaña
+                    // Lógica para generar PDF
                     window.open('../actions/generarPDF.php', '_blank');
+                } else if (result.dismiss === Swal.DismissReason.cancel) {
+                    // Lógica para generar Excel
+                    window.open('../actions/generarEXCEL.php', '_blank');
                 }
             });
         });
