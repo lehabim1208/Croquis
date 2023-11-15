@@ -75,7 +75,7 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'usuario') {
                                         <p><strong>Asunto:</strong> <?php echo $asunto; ?></p>
                                         <p><strong>Descripción:</strong> <?php echo $descripcion; ?></p>
                                         <p><strong>Fecha y hora:</strong> <?php echo $fecha_hora; ?></p>
-                                        <p><strong>Id Reservación:</strong> <?php echo $idReserva; ?></p>
+                                        <p><strong>Folio reservación:</strong> 0000<?php echo $idReserva; ?></p>
                                         <p><strong>Estado: </strong><span class="<?php
                                         if ($estado == "En proceso") {
                                             echo "text-success";

@@ -22,7 +22,7 @@ include 'config/conexion.php';
       
           <!-- Icono -->
           <div class="fadeIn first">
-            <img src="https://i.ibb.co/kHsQsMX/user-5-svgrepo-com.png" id="icon" alt="User Icon" style="width: 100px;"/>
+            <img src="img/user.svg" id="icon" alt="User Icon" style="width: 100px;"/>
           </div>
       
           <!-- Inicio de sesión -->
@@ -55,6 +55,21 @@ include 'config/conexion.php';
           emailInput.focus();
       };
   </script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const registered = urlParams.get('registered');
+
+      if (registered === 'true') {
+          Swal.fire({
+              title: 'Ahora puedes iniciar sesión',
+              showConfirmButton: false,
+              timer: 2000
+          });
+      }
+  });
+</script>
   
     <script>
         $(document).ready(function () {
@@ -73,24 +88,41 @@ include 'config/conexion.php';
                     success: function (response) {
                         if (response == "admin_success") {
                             // Mostrar un modal admin
-                            Swal.fire({
-                                title: 'Iniciando sesión',
-                                icon: 'success', // Mostrar el mensaje
-                                timer: 1500,
-                                showConfirmButton: false, // No mostrar botón de confirmación
-                                timerProgressBar: true, // Mostrar una barra de progreso
+                            const Toast = Swal.mixin({
+                              toast: true,
+                              position: "top-end",
+                              showConfirmButton: false,
+                              timer: 1600,
+                              timerProgressBar: true,
+                              didOpen: (toast) => {
+                                toast.onmouseenter = Swal.stopTimer;
+                                toast.onmouseleave = Swal.resumeTimer;
+                              }
+                            });
+                            Toast.fire({
+                              icon: "success",
+                              title: "Iniciando sesión"
                             });
                             setTimeout(function () {
                               window.location.href = "paginas/index.php";
                             }, 1600);
+
                         } else if (response == "user_success") {
                             // Mostrar un modal user
-                            Swal.fire({
-                                title: 'Bienvenido Usuario',
-                                icon: 'success', // Mostrar el mensaje
-                                timer: 1500,
-                                showConfirmButton: false, // No mostrar botón de confirmación
-                                timerProgressBar: true, // Mostrar una barra de progreso
+                            const Toast = Swal.mixin({
+                              toast: true,
+                              position: "top-end",
+                              showConfirmButton: false,
+                              timer: 1600,
+                              timerProgressBar: true,
+                              didOpen: (toast) => {
+                                toast.onmouseenter = Swal.stopTimer;
+                                toast.onmouseleave = Swal.resumeTimer;
+                              }
+                            });
+                            Toast.fire({
+                              icon: "success",
+                              title: "Iniciando sesión"
                             });
                             setTimeout(function () {
                               window.location.href = "paginas/index_usuario.php";

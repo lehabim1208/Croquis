@@ -2,8 +2,8 @@
 include '../config/conexion.php';
 
 // Obtener el valor de idEspacio y fecha de la solicitud AJAX
-$idEspacio = $_POST['idEspacio'];
-$fecha = $_POST['fecha'];
+$idEspacio = '15';
+$fecha = '2023-11-15';
 
 // Consulta SQL para obtener los horarios de la tabla "horarios" donde "idCatalogo" sea igual a $idEspacio
 $sql = "SELECT horario FROM horarios WHERE idCatalogo = $idEspacio";
@@ -31,14 +31,16 @@ if ($result->num_rows > 0) {
     // Calcular la diferencia entre los horarios disponibles y los horarios ocupados
     $horariosDisponibles = array_diff($horarios, $horariosOcupados);
 
-    // Obtener la hora actual en formato "HH:MM"
+    echo "<br> ------------------------------------------------- <br>";
+    echo "HORARIOS:";
+    echo "<ul>";
+
+    // Obtener la hora actual en formato "H:i"
     date_default_timezone_set('America/Mexico_City');
     $horaActual = date('H:i');
 
     $hoy = new DateTime(); // Obtiene la fecha actual
     $hoy = $hoy->format('Y-m-d'); // Formatea la fecha actual
-
-    $horariosMostrados = [];
 
     foreach ($horariosDisponibles as $horario) {
         // Obtener la hora del horario y convertirla al formato "H:i"
@@ -46,17 +48,17 @@ if ($result->num_rows > 0) {
         $horaInicio = trim(explode(' ', $horarioPartes[0])[0]);
         $horaInicio = date('H:i', strtotime($horaInicio));
 
-        // Si la fecha es hoy y la hora del horario es mayor a la hora actual, se agrega a los horarios mostrados
+        // Si la fecha es hoy y la hora del horario es mayor a la hora actual, se muestra
         if ($fecha == $hoy && $horaInicio > $horaActual) {
-            $horariosMostrados[] = $horario;
+            echo "<li>$horario</li>";
         } elseif ($fecha != $hoy) {
-            // Si la fecha no es hoy, se agregan todos los horarios disponibles
-            $horariosMostrados[] = $horario;
+            // Si la fecha no es hoy, se muestran todos los horarios disponibles
+            echo "<li>$horario</li>";
         }
     }
 
-    // Devolver los horarios mostrados en formato JSON
-    echo json_encode($horariosMostrados);
+    echo "</ul>";
+    
 } else {
     echo "No se encontraron horarios para el espacio con ID: $idEspacio";
 }

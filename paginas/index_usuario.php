@@ -24,6 +24,5 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'usuario') {
     </div>
 
     <?php include 'footer.html'; ?>
-
 </body>
 </html>

@@ -74,17 +74,27 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'usuario') {
     // Función para mostrar el modal de reserva con horarios desde la base de datos
     function mostrarModalNombreFecha(nombreEspacio, idEspacio, fecha = null) {
 
-            // Calcular la fecha actual
-        const currentDate = new Date();
-        currentDate.toLocaleString("en-US", { timeZone: "America/Mexico_City" });
+                      // Obtener la fecha actual en el huso horario de Ciudad de México
+                      const currentDate = new Date();
+            const mexicoCityTime = new Date(currentDate.toLocaleString("en-US", { timeZone: "America/Mexico_City" }));
 
-        // Calcular la fecha dentro de un mes
-        const oneMonthFromNow = new Date(currentDate);
-        oneMonthFromNow.setMonth(currentDate.getMonth() + 1);
+            // Calcular la fecha dentro de 6 meses
+            const sixMonthsFromNow = new Date(mexicoCityTime);
+            sixMonthsFromNow.setMonth(mexicoCityTime.getMonth() + 6);
 
-        // Convertir las fechas en formato ISO para establecer los atributos min y max
-        const minDate = currentDate.toISOString().split('T')[0];
-        const maxDate = oneMonthFromNow.toISOString().split('T')[0];
+            // Ajustar el día al último día del mes si la fecha actual está en el mes de febrero
+            if (mexicoCityTime.getMonth() === 1 && sixMonthsFromNow.getMonth() === 2) {
+                sixMonthsFromNow.setDate(0);
+            }
+
+            // Obtener el formato ISO de la fecha actual
+            const minDate = mexicoCityTime.toISOString().split('T')[0];
+
+            // Obtener el formato ISO de la fecha dentro de 6 meses
+            const maxDate = sixMonthsFromNow.toISOString().split('T')[0];
+
+            console.log(minDate); // Fecha actual en formato ISO
+            console.log(maxDate); // Fecha dentro de 6 meses en formato ISO
 
         // Obtener el nombre del usuario desde la sesión en PHP
         const nombreUsuario = "<?php echo $_SESSION['nombre']; ?>";
@@ -126,28 +136,45 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'usuario') {
         });
 
         // Obtener el botón "Siguiente"
-const confirmButton = Swal.getConfirmButton();
+        const confirmButton = Swal.getConfirmButton();
 
-// Obtener el elemento de entrada de fecha
-const fechaInput = Swal.getPopup().querySelector('#fecha');
+        // Obtener el elemento de entrada de fecha
+        const fechaInput = Swal.getPopup().querySelector('#fecha');
 
-// Deshabilitar el botón de confirmación al principio
-confirmButton.disabled = true;
+        // Deshabilitar el botón de confirmación al principio
+        confirmButton.disabled = true;
 
-// Agregar un evento de cambio al campo de fecha
-fechaInput.addEventListener('input', toggleConfirmButton);
+        // Agregar un evento de cambio al campo de fecha
+        fechaInput.addEventListener('input', toggleConfirmButton);
 
-function toggleConfirmButton() {
-    const fechaValue = fechaInput.value;
+            function getRangeOfAllowedDates() {
+                const currentDate = new Date();
+                const sixMonthsFromNow = new Date(currentDate);
+                sixMonthsFromNow.setMonth(currentDate.getMonth() + 6);
+                return { currentDate, sixMonthsFromNow };
+            }
 
-    // Habilitar el botón si el campo de fecha tiene contenido y la fecha es válida
-    confirmButton.disabled = !(fechaValue && isValidDate(fechaValue));
-}
+            // Función que activa o desactiva el botón
+            function toggleConfirmButton() {
+                const fechaValue = fechaInput.value;
+                const { currentDate, sixMonthsFromNow } = getRangeOfAllowedDates();
 
-function isValidDate(dateString) {
-    const selectedDate = new Date(dateString);
-    return !isNaN(selectedDate) && selectedDate >= currentDate && selectedDate <= oneMonthFromNow;
-}
+                // Habilitar el botón si ambos campos tienen contenido y la fecha es válida
+                confirmButton.disabled = !(fechaValue && isValidDate(fechaValue, currentDate, sixMonthsFromNow));
+            }
+
+
+            function isValidDate(fechaValue, currentDate, sixMonthsFromNow) {
+                const currentDate2 = new Date(currentDate);
+                currentDate2.setHours(0, 0, 0, 0);
+
+                const [year, month, day] = fechaValue.split('/');
+                const formattedFechaValue = `${day}/${month}/${year}`;
+                const selectedDate = new Date(Date.parse(formattedFechaValue));
+                selectedDate.setHours(0, 0, 0, 0);
+
+                return selectedDate >= currentDate2 && selectedDate <= sixMonthsFromNow;
+            }
 
     }
 

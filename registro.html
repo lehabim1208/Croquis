@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <link rel="stylesheet" href="estilos/login2.css">
+    <link rel="stylesheet" href="estilos/inicio.css">
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link  rel="icon" href="" type="image/png"/>
     <title>Reservaciones</title>
@@ -15,7 +15,7 @@
         <div id="formContent">
           <h2 class="active">Registro</h2>
           <div class="fadeIn first">
-            <img src="https://i.ibb.co/kHsQsMX/user-5-svgrepo-com.png" id="icon" alt="User Icon" style="width: 100px;"/>
+            <img src="img/user.svg" id="icon" alt="User Icon" style="width: 100px;"/>
           </div>
       
           <form action="actions/registrar.php" method="post" id="formulario">
@@ -51,6 +51,43 @@
             emailInput.focus();
         };
     </script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const formulario = document.getElementById("formulario");
+
+        formulario.addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            fetch('actions/registrar.php', {
+                method: 'POST',
+                body: new FormData(formulario)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Registro exitoso',
+                        text: data.message,
+                        showConfirmButton: false,
+                        timer: 2000
+                    }).then(() => {
+                        window.location.href = '../login.html?registered=true';
+                    });
+                } else {
+                    // Manejar otros estados de respuesta si es necesario
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    });
+</script>
+
+
+
       <script>
         document.addEventListener("DOMContentLoaded", function() {
           const nombreInput = document.getElementById("nombre");
