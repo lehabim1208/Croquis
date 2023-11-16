@@ -25,7 +25,7 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'administrador') {
             </button>
             
 <div class="table-responsive">
-<table class="table table-light" id="tbl">
+<table class="table table-light table-hover" id="tbl">
                 <thead>
                     <tr class="table-info">
                     <th scope="col">IdUsuario</th>

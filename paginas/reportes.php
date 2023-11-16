@@ -25,7 +25,7 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'administrador') {
             </button> -->
             
 <div class="table-responsive">
-<table class="table table-light" id="tbl">
+<table class="table table-light table-hover" id="tbl">
                 <thead>
                     <tr class="table-info">
                     <th scope="col"># Reporte</th>
@@ -94,8 +94,8 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'administrador') {
                                         }
                                     ?>"><?php echo $estado; ?></span></td>
                                     <td>
-                                    <button style="margin: 2px;" class="btn btn-info acciones-reporte" data-idreporte="<?php echo $idReporte; ?>">Acciones</button>
-                                        <button style="margin: 2px;" class="btn btn-warning correo-reporte" data-toggle="modal" data-target="#correoModal"
+                                    <button style="margin: 2px; width:100%;" class="btn btn-info acciones-reporte" data-idreporte="<?php echo $idReporte; ?>">Acciones</button>
+                                        <button style="margin: 2px; width:100%;" class="btn btn-warning correo-reporte" data-toggle="modal" data-target="#correoModal"
                                         data-idreporte="<?php echo $idReporte; ?>"
                                         data-asunto="<?php echo $asunto; ?>"
                                         data-descripcion="<?php echo $descripcion; ?>"

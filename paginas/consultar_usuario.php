@@ -17,7 +17,7 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'usuario') {
 <!-- Contenido del dashboard -->
 <div class="container-fluid pr-4 pl-4 pt-4">
     <div class="row">
-        <div class="col-md-10 p-4" id="contenido">
+        <div class="col-md-12 p-4" id="contenido">
             <h3 class="mb-4">Mis reservaciones:</h3>
             <select class="form-control" name="filtro" id="filtro">
                 <option value="1">Todas</option>

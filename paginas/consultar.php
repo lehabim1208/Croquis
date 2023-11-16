@@ -17,7 +17,7 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'administrador') {
 <!-- Contenido del dashboard -->
 <div class="container-fluid pr-4 pl-4 pt-4">
     <div class="row">
-        <div class="col-md-10 p-4" id="contenido">
+        <div class="col-md-12 p-4" id="contenido">
             <h3 class="mb-4">Mis reservaciones:</h3>
             <select class="form-control" name="filtro" id="filtro">
                 <option value="1">Todas</option>
@@ -25,6 +25,20 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'administrador') {
                 <option value="3">Hoy</option>
                 <option value="4">Pasadas</option>
             </select>
+            <div class="row">
+    <div class="col-md-3">
+        <input type="date" class="form-control" id="fechaBusqueda" placeholder="Buscar por fecha">
+    </div>
+    <div class="col-md-3">
+        <input type="text" class="form-control" id="clienteBusqueda" placeholder="Buscar por cliente">
+    </div>
+    <div class="col-md-3">
+        <input type="text" class="form-control" id="folioBusqueda" placeholder="Buscar por folio">
+    </div>
+    <div class="col-md-3">
+        <input type="text" class="form-control" id="espacioBusqueda" placeholder="Buscar por espacio">
+    </div>
+</div>
             <br>
             <div class="row">
                 <!-- Tarjetas Bootstrap para mostrar las reservaciones -->
@@ -121,7 +135,8 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'administrador') {
                                         $nombreCliente = "No se encontró el nombre";
                                     }
                                  ?>
-                                <p class="card-text">Cliente: <?php echo $nombreCliente; ?></p>
+                                <p class="card-text" data-tipo="nombreCliente">Cliente: <?php echo $nombreCliente; ?></p>
+
 
                                 <?php if ($botonDeshabilitado): ?>
                                     <p style="margin-bottom: 48px;"></p>
@@ -644,6 +659,62 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'administrador') {
                 }
             });
         });
+    </script>
+    <script>
+        //FILTRADO DE RESERVACIONES
+       document.addEventListener("DOMContentLoaded", function() {
+    var tarjetas = document.querySelectorAll(".col-lg-4");
+
+    // Función para filtrar por fecha
+    function filtrarPorFecha() {
+        var fechaBusqueda = new Date(document.getElementById("fechaBusqueda").value); // Obtener la fecha del campo de búsqueda
+
+        tarjetas.forEach(function(tarjeta) {
+            var fechaTarjeta = new Date(tarjeta.querySelector(".card-text[data-tipo='fecha']").textContent); // Obtener la fecha de la tarjeta
+
+            // Comparar solo las fechas (ignorando la hora)
+            if (fechaTarjeta.toISOString().split('T')[0] !== fechaBusqueda.toISOString().split('T')[0] && fechaBusqueda !== "") {
+                tarjeta.style.display = "none";
+            } else {
+                tarjeta.style.display = "block";
+            }
+        });
+    }
+
+    // Escuchar cambios en el campo de fecha
+    document.getElementById("fechaBusqueda").addEventListener("input", filtrarPorFecha);
+
+    // Resto del código para filtrar por folio, espacio y cliente
+    document.getElementById("folioBusqueda").addEventListener("input", filtrarTarjetas);
+    document.getElementById("espacioBusqueda").addEventListener("input", filtrarTarjetas);
+    document.getElementById("clienteBusqueda").addEventListener("input", filtrarTarjetas);
+
+    // Función para filtrar por folio, espacio y cliente
+    function filtrarTarjetas() {
+        var folio = document.getElementById("folioBusqueda").value.trim().toLowerCase();
+        var espacio = document.getElementById("espacioBusqueda").value.trim().toLowerCase();
+        var cliente = document.getElementById("clienteBusqueda").value.trim().toLowerCase(); // Variable para el filtro por nombre del cliente
+
+        tarjetas.forEach(function(tarjeta) {
+            var folioTarjeta = tarjeta.querySelector(".card-title").textContent.trim().toLowerCase();
+            var espacioTarjeta = tarjeta.querySelector(".card-text[data-tipo='nombreEspacio']").textContent.trim().toLowerCase();
+            var nombreClienteTarjeta = tarjeta.querySelector(".card-text[data-tipo='nombreCliente']").textContent.trim().toLowerCase(); // Seleccionar el nombre del cliente
+
+            if (
+                (folio !== "" && !folioTarjeta.includes(folio)) ||
+                (espacio !== "" && espacioTarjeta.indexOf(espacio) === -1) ||
+                (cliente !== "" && nombreClienteTarjeta.indexOf(cliente) === -1) // Condición para filtrar por nombre del cliente
+            ) {
+                tarjeta.style.display = "none";
+            } else {
+                tarjeta.style.display = "block";
+            }
+        });
+    }
+});
+
+
+
     </script>
 
     <script>
