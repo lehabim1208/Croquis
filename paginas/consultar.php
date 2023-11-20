@@ -172,8 +172,8 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'administrador') {
                                             $nombreEspacioEdicion = "No se encontró el id del espacio";
                                         }
                                     ?>
-                                    <button type="button" class="btn btn-warning editar-btn" data-idedicion="<?php echo implode(',', $reserva['idsReservasAgrupadas']); ?>" data-idespacioedicion="<?php echo $idEspacioEdicion; ?>" data-nombreespacioedicion="<?php echo $nombreEspacioEdicion; ?>" data-nombreclientee="<?php echo $nombreCliente; ?>" data-idclientee="<?php echo $idClienteComparar; ?>"><i class="fas fa-pencil-alt"></i></button>
-                                    <button type="button" class="btn btn-danger eliminar-btn" data-ideliminacion="<?php echo implode(',', $reserva['idsReservasAgrupadas']); ?>"><i class="fas fa-trash-alt"></i></button>
+                                    <button type="button" class="btn btn-warning editar-btn editar-hover" data-idedicion="<?php echo implode(',', $reserva['idsReservasAgrupadas']); ?>" data-idespacioedicion="<?php echo $idEspacioEdicion; ?>" data-nombreespacioedicion="<?php echo $nombreEspacioEdicion; ?>" data-nombreclientee="<?php echo $nombreCliente; ?>" data-idclientee="<?php echo $idClienteComparar; ?>"><i class="fas fa-pencil-alt"></i></button>
+                                    <button type="button" class="btn btn-danger eliminar-btn eliminar-hover" data-ideliminacion="<?php echo implode(',', $reserva['idsReservasAgrupadas']); ?>"><i class="fas fa-trash-alt"></i></button>
                                     <button style="font-size:12px;" type="button" class="btn btn-info reportar-btn" data-toggle="modal" data-target="#reportModal" data-id="<?php echo implode(',', $reserva['idsReservasAgrupadas']); ?>">Reportar</button>
                                 <?php endif; ?>
                             </div>
@@ -399,6 +399,9 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'administrador') {
             if (mexicoCityTime.getMonth() === 1 && sixMonthsFromNow.getMonth() === 2) {
                 sixMonthsFromNow.setDate(0);
             }
+
+            mexicoCityTime.setDate(mexicoCityTime.getDate() - 1);
+            sixMonthsFromNow.setDate(sixMonthsFromNow.getDate() - 1);
 
             // Obtener el formato ISO de la fecha actual
             const minDate = mexicoCityTime.toISOString().split('T')[0];

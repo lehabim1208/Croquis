@@ -51,8 +51,8 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'administrador') {
                                         <p class="card-text">Nombre Edifico: <?php echo $nombreEdificio; ?></p>
                                         <p class="card-text">Zona o región: <?php echo $zonaRegion; ?></p>
                                         <button type="button" class="btn btn-primary reservar-btn" data-nombre="<?php echo $nombreEspacio; ?>" data-id="<?php echo $id; ?>">Reservar</button>
-                                        <button type="button" class="btn btn-warning editar-btn" data-nombre="<?php echo $nombreEspacio; ?>" data-capacidad="<?php echo $capacidadEspacio; ?>" data-id="<?php echo $id; ?>" data-edificio="<?php echo $nombreEdificio; ?>" data-zona="<?php echo $zonaRegion; ?>"><i class="fas fa-pencil-alt"></i></button>
-                                        <button type="button" class="btn btn-danger eliminar-btn" data-nombre="<?php echo $nombreEspacio; ?>" data-id="<?php echo $id; ?>"><i class="fas fa-trash-alt"></i></button>
+                                        <button type="button" class="btn btn-warning editar-btn editar-hover" data-nombre="<?php echo $nombreEspacio; ?>" data-capacidad="<?php echo $capacidadEspacio; ?>" data-id="<?php echo $id; ?>" data-edificio="<?php echo $nombreEdificio; ?>" data-zona="<?php echo $zonaRegion; ?>"><i class="fas fa-pencil-alt"></i></button>
+                                        <button type="button" class="btn btn-danger eliminar-btn eliminar-hover" data-nombre="<?php echo $nombreEspacio; ?>" data-id="<?php echo $id; ?>"><i class="fas fa-trash-alt"></i></button>
                                     </div>
                                 </div>
                             </div>
@@ -138,7 +138,11 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'administrador') {
                 sixMonthsFromNow.setDate(0);
             }
 
-            // Obtener el formato ISO de la fecha actual
+            // Restar un día al minDate
+            mexicoCityTime.setDate(mexicoCityTime.getDate() - 1);
+            sixMonthsFromNow.setDate(sixMonthsFromNow.getDate() - 1);
+
+            // Obtener el formato ISO de la fecha actual después de restar un día
             const minDate = mexicoCityTime.toISOString().split('T')[0];
 
             // Obtener el formato ISO de la fecha dentro de 6 meses
@@ -306,13 +310,14 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'administrador') {
                         Swal.fire({
                             title: `Reservar ${nombreEspacio}`,
                             html: `
-                    <p class="text-info">Seleccione los horarios que necesita el cliente para su evento</p>
+                    <p class="text-info">Seleccione los horarios que necesite el cliente</p>
                         <p>Nombre del cliente: ${nombreCliente}</p>
                         <p>Fecha: ${fecha}</p>
                         <br>
                         <div class="swal2-checkboxes checkcheck">
                             ${checkboxesHTML}
-                        </div>`,
+                        </div>
+                        `,
                             showDenyButton: true,
                             denyButtonText: 'Regresar',
                             customClass: {

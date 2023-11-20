@@ -65,8 +65,8 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'administrador') {
                                 <td><?php echo $idCatalogo; ?></td>
                                 <td><?php echo $nombreEspacio; ?></td>
                                 <td>
-                                    <button class="btn btn-warning editar-horario" data-id="<?php echo $idHorario; ?>" data-horario="<?php echo $horario; ?>" data-catalogo="<?php echo $idCatalogo ?>"><i class="fas fa-pencil-alt"></i></button>
-                                    <button class="btn btn-danger eliminar-horario" data-id="<?php echo $idHorario; ?>" data-horario="<?php echo $horario; ?>"><i class="fas fa-trash-alt"></i></button>
+                                    <button class="btn btn-warning editar-horario editar-hover" data-id="<?php echo $idHorario; ?>" data-horario="<?php echo $horario; ?>" data-catalogo="<?php echo $idCatalogo ?>"><i class="fas fa-pencil-alt"></i></button>
+                                    <button class="btn btn-danger eliminar-horario eliminar-hover" data-id="<?php echo $idHorario; ?>" data-horario="<?php echo $horario; ?>"><i class="fas fa-trash-alt"></i></button>
                                 </td>
 
                             </tr>

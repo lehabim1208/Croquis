@@ -56,7 +56,7 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'usuario') {
                                             echo "text-danger";
                                         }
                                     ?>"><?php echo $estado; ?></span></h6>
-                                    <button class="btn btn-primary" data-toggle="modal" data-target="#detalleModal<?php echo $idReporte; ?>">Detalles</button>
+                                    <button class="btn btn-primary detalle-hover" data-toggle="modal" data-target="#detalleModal<?php echo $idReporte; ?>">Detalles</button>
                                 </div>
                             </div>
                         </div>

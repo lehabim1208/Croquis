@@ -34,6 +34,106 @@ footer {
 }
 
 
+#hoverText {
+    font-size: 12px;
+    transition: color 0.3s; /* Transición suave para el cambio de color */
+  }
+
+  #hoverText:hover {
+    color: rgb(185, 160, 17); /* Cambiar el color al pasar el mouse */
+    cursor: pointer; /* Cambiar el cursor al pasar el mouse */
+  }
+
+  #hoverText:hover::after {
+    content: "Los horarios que se muestran, son los únicos disponibles. Si usted necesita otro horario contacte al administrador.";
+    display: block;
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.753);
+    color: white;
+    padding: 5px;
+    border-radius: 5px;
+    margin-top: -60px;
+    margin-left: -30px;
+  }
+
+  /* Estilo para editar */
+.editar-hover:hover::after {
+    content: "Editar";
+    display: block;
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.753);
+    color: white;
+    padding: 5px;
+    border-radius: 5px;
+    margin-top: -60px;
+    margin-left: -30px;
+  }
+  
+  /* Estilo para eliminar */
+  .eliminar-hover:hover::after {
+    content: "Eliminar";
+    display: block;
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.753);
+    color: white;
+    padding: 5px;
+    border-radius: 5px;
+    margin-top: -60px;
+    margin-left: -30px;
+  }
+  
+    /* Estilo para acciones */
+    .acciones-hover:hover::after {
+        content: "Mandar respuesta y cambiar estado";
+        display: block;
+        position: absolute;
+        background-color: rgba(0, 0, 0, 0.753);
+        color: white;
+        padding: 5px;
+        border-radius: 5px;
+        margin-top: -90px;
+        margin-left: -30px;
+      }
+
+    /* Estilo para correo */
+    .correo-hover:hover::after {
+        content: "Enviar correo Jefe de Carrera";
+        display: block;
+        position: absolute;
+        background-color: rgba(0, 0, 0, 0.753);
+        color: white;
+        padding: 5px;
+        border-radius: 5px;
+        margin-top: -90px;
+        margin-left: -30px;
+    }
+
+    /* Estilo para reserva usuario */
+    .reserva-hover:hover::after {
+        content: "Consulta disponibilidad del espacio";
+        display: block;
+        position: absolute;
+        background-color: rgba(0, 0, 0, 0.753);
+        color: white;
+        padding: 5px;
+        border-radius: 5px;
+        margin-top: -65px;
+        margin-left: -30px;
+    }
+
+    /* Estilo para detalle de reporte */
+    .detalle-hover:hover::after {
+        content: "Ver detalles del reporte";
+        display: block;
+        position: absolute;
+        background-color: rgba(0, 0, 0, 0.753);
+        color: white;
+        padding: 5px;
+        border-radius: 5px;
+        margin-top: -67px;
+        margin-left: -40px;
+    }
+
  /* Estilo personalizado para el menú lateral */
  #sidebar {
     background: #343a40; /* Fondo oscuro */
@@ -63,4 +163,13 @@ footer {
         width: 100%; /* Ancho del menú lateral */
         overflow-y: auto; /* Agrega una barra de desplazamiento en caso de que el contenido sea largo */
     }
+
+    .checkcheck{
+        padding: 5px;
+        margin: 5px;
+        font-size: 14px;
+    }
+    .checkcheck input[type="checkbox"] {
+        transform: scale(0.8);
+      }
 }

@@ -45,7 +45,7 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'usuario') {
                                             <p class="card-text">Capacidad: <?php echo $capacidadEspacio; ?> personas</p>
                                             <p class="card-text">Nombre Edifico: <?php echo $nombreEdificio; ?></p>
                                             <p class="card-text">Zona o región: <?php echo $zonaRegion; ?></p>
-                                            <button type="button" class="btn btn-primary reservar-btn" data-nombre="<?php echo $nombreEspacio; ?>" data-id="<?php echo $id; ?>">Consultar</button>
+                                            <button type="button" class="btn btn-primary reservar-btn reserva-hover" data-nombre="<?php echo $nombreEspacio; ?>" data-id="<?php echo $id; ?>">Consultar</button>
                                         </div>
                                     </div>
                                 </div>
@@ -87,6 +87,9 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'usuario') {
                 sixMonthsFromNow.setDate(0);
             }
 
+            mexicoCityTime.setDate(mexicoCityTime.getDate() - 1);
+            sixMonthsFromNow.setDate(sixMonthsFromNow.getDate() - 1);
+            
             // Obtener el formato ISO de la fecha actual
             const minDate = mexicoCityTime.toISOString().split('T')[0];
 
@@ -115,9 +118,7 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'usuario') {
             title: `Reservar: ${nombreEspacio}`,
             html: `
             <p class="text-info">Seleccione una fecha para consultar horarios disponibles</p>
-                <div id="usuarioContainer">
-                    
-                </div>
+                <div style="display: none;" id="usuarioContainer"></div>
                 <input id="fecha" class="swal2-input" placeholder="Fecha" type="date" min="${minDate}" max="${maxDate}" value="${fecha}">`,
             showCancelButton: true,
             confirmButtonText: 'Siguiente',
@@ -175,12 +176,10 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'usuario') {
 
                 return selectedDate >= currentDate2 && selectedDate <= sixMonthsFromNow;
             }
-
     }
 
-
-
 function mostrarModalHorarios(nombreEspacio, idEspacio, selectedUserId, nombreCliente, fecha) {
+    
     // Realizar una petición AJAX para obtener los horarios desde la base de datos
     $.ajax({
         url: '../actions/consultarHorarios.php', // Ajusta la ruta al script PHP
@@ -215,13 +214,17 @@ function mostrarModalHorarios(nombreEspacio, idEspacio, selectedUserId, nombreCl
                         </div>`;
                 });
                 checkboxesHTML += '</div';
-
+                
                 Swal.fire({
                     title: `Reservar ${nombreEspacio}`,
                     html: `
-                        <p class="text-info">Seleccione los horarios que necesite para su evento</p>
-                        <p>Nombre: ${nombreCliente}</p>
+                        <p class="text-info">Seleccione los horarios que necesite cubrir</p>
                         <p>Fecha: ${fecha}</p>
+                        <p>
+                            <strong>
+                                <span id="hoverText">¿Más detalles sobre los horarios disponibles?</span>
+                            </strong>
+                        </p>
                         <br>
                         <div class="swal2-checkboxes checkcheck">
                             ${checkboxesHTML}
@@ -291,9 +294,6 @@ function mostrarModalHorarios(nombreEspacio, idEspacio, selectedUserId, nombreCl
         }
     });
 }
-
-
-
 
 
 

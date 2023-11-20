@@ -94,8 +94,8 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'administrador') {
                                         }
                                     ?>"><?php echo $estado; ?></span></td>
                                     <td>
-                                    <button style="margin: 2px; width:100%;" class="btn btn-info acciones-reporte" data-idreporte="<?php echo $idReporte; ?>">Acciones</button>
-                                        <button style="margin: 2px; width:100%;" class="btn btn-warning correo-reporte" data-toggle="modal" data-target="#correoModal"
+                                    <button style="margin: 2px; width:100%;" class="btn btn-info acciones-reporte acciones-hover" data-idreporte="<?php echo $idReporte; ?>">Acciones</button>
+                                        <button style="margin: 2px; width:100%;" class="btn btn-warning correo-reporte correo-hover" data-toggle="modal" data-target="#correoModal"
                                         data-idreporte="<?php echo $idReporte; ?>"
                                         data-asunto="<?php echo $asunto; ?>"
                                         data-descripcion="<?php echo $descripcion; ?>"
