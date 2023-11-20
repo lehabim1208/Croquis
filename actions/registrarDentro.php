@@ -7,7 +7,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $contrasena = password_hash($_POST['password'], PASSWORD_DEFAULT); // Hashear la contraseña
     $correo = $_POST['correo'];
     $celular = $_POST['celular'];
-    $rol = "usuario";
+    $rol = $_POST['rol'];
 
     // Verificar si el correo ya existe en la base de datos
     $sqlCorreo = "SELECT COUNT(*) FROM usuario WHERE correo = ?";
